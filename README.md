@@ -10,6 +10,7 @@ Text properties can also be modified by changing the values inside the XML<br>
 ## To Do
 - Add support for extra FCO text features<br>
 - Clean up the project code and files
+- Possibly merge HedgeHex into the tool
 
 ## Thanks
 Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
