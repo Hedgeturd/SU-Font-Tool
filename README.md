@@ -1,7 +1,7 @@
 # Sonic Unleashed FCO Tool
 A tool to convert Unleashed FCO files into XML files and vice versa
 
-## Using
+## Usage
 As simple as dragging and dropping the supported file formats onto the executable<br>
 
 Text can be modified by placing translated text into the XML using HedgeHex<br>
