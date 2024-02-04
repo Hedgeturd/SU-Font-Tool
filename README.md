@@ -7,9 +7,10 @@ As simple as dragging and dropping the supported file formats onto the executabl
 Text can be modified by placing translated text into the XML using [HedgeHex](https://github.com/NextinMono/HedgeHex)<br>
 Text properties can also be modified by changing the values inside the XML<br>
 
-## Limitations
-The tool is only able to convert basic FCO files<br>
-Highlights and other extra FCO text features are not yet supported
+## To Do
+- Add support for extra FCO text features<br>
+- Clean up the project code and files
 
 ## Thanks
 Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)
+and thank you to [NextinHKRY](https://github.com/NextinMono) for general coding help
