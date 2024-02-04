@@ -7,5 +7,5 @@ As simple as dragging and dropping supported file formats
 At this moment in time, the tool is only able to convert basic FCO files that don't include things such as highlights
 
 ## Thanks
-Big thank you to TheExentist for letting me recycle some of the code from the ColorsXTBConv Tool which can be found here:
+Big thank you to TheExentist for letting me recycle some of the code from the SonicColorsXTBConv Tool which can be found here:
 https://github.com/TheExentist151/SonicColorsXTBConv/tree/master
