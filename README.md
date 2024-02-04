@@ -13,4 +13,3 @@ It does not yet have support for writing highlights and other extra FCO text fea
 
 ## Thanks
 Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)
-
