@@ -4,7 +4,7 @@ A tool to convert Unleashed FCO files into XML files and vice versa
 ## Usage
 As simple as dragging and dropping the supported file formats onto the executable<br>
 
-Text can be modified by placing translated text into the XML using HedgeHex<br>
+Text can be modified by placing translated text into the XML using [HedgeHex](https://github.com/NextinMono/HedgeHex)<br>
 Text properties can also be modified by changing the values inside the XML<br>
 
 ## Limitations
