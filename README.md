@@ -12,5 +12,5 @@ Text properties can also be modified by changing the values inside the XML<br>
 - Clean up the project code and files
 
 ## Thanks
-Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)
+Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
 and thank you to [NextinHKRY](https://github.com/NextinMono) for general coding help
