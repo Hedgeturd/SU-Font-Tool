@@ -174,12 +174,32 @@ namespace SonicUnleashedFCOConv {
                     skipData.skip2 = binaryReader.ReadInt32();
                     skipData.skip2Big = EndianSwap(skipData.skip2);
 
-                    if (skipData.skip2Big > 0) {
+                    List<Structs.Highlight> Highlights = new List<Structs.Highlight>();
+                    for(int h = 0; h < skipData.skip2Big; h++) {
+                        Structs.Highlight hightlightData = new Structs.Highlight();
+                                
+                        hightlightData.highlightStart = binaryReader.ReadInt32();
+                        hightlightData.highlightEnd = binaryReader.ReadInt32();
+                        hightlightData.highlightMarker = binaryReader.ReadInt32();
+                        hightlightData.highlightAlpha = binaryReader.ReadByte();
+                        hightlightData.highlightRed = binaryReader.ReadByte();
+                        hightlightData.highlightGreen = binaryReader.ReadByte();
+                        hightlightData.highlightBlue = binaryReader.ReadByte();
+
+                        Highlights.Add(hightlightData);
+                        Console.WriteLine("Highlight Data Read!");
+                    }
+
+                    cellData.HighlightList = Highlights;
+
+                    /*if (skipData.skip2Big > 0)
+                    {
                         skipFlag = true;
                         List<Structs.Highlight> Highlights = new List<Structs.Highlight>();
-                        for(int h = 0; h < skipData.skip2Big; h++) {
+                        for (int h = 0; h < skipData.skip2Big; h++)
+                        {
                             Structs.Highlight hightlightData = new Structs.Highlight();
-                                
+
                             hightlightData.highlightStart = binaryReader.ReadInt32();
                             hightlightData.highlightEnd = binaryReader.ReadInt32();
                             hightlightData.highlightMarker = binaryReader.ReadInt32();
@@ -193,7 +213,7 @@ namespace SonicUnleashedFCOConv {
                         }
 
                         cellData.HighlightList = Highlights;
-                    }
+                    }*/
 
                     int skip3 = binaryReader.ReadInt32();
 
@@ -280,22 +300,40 @@ namespace SonicUnleashedFCOConv {
                             writer.WriteEndElement();
                         }
 
-                        while (skipFlag == true) {
+                        /*writer.WriteStartElement("Highlight");
+
+                        foreach (Structs.Highlight highlight in cell.HighlightList) {
+                            writer.WriteAttributeString("Start", EndianSwap(highlight.highlightStart).ToString());
+                            writer.WriteAttributeString("End", EndianSwap(highlight.highlightEnd).ToString());
+                            writer.WriteAttributeString("Marker", EndianSwap(highlight.highlightMarker).ToString());
+                            
+                            writer.WriteAttributeString("Alpha", highlight.highlightAlpha.ToString());
+                            writer.WriteAttributeString("Red", highlight.highlightRed.ToString());
+                            writer.WriteAttributeString("Green", highlight.highlightGreen.ToString());
+                            writer.WriteAttributeString("Blue", highlight.highlightBlue.ToString());
+                        }
+                        writer.WriteEndElement();*/
+
+                        /*while (skipFlag == true)
+                        {
                             writer.WriteStartElement("Highlight");
 
-                            foreach(Structs.Highlight highlight in cell.HighlightList) {
+                            foreach (Structs.Highlight highlight in cell.HighlightList)
+                            {
                                 writer.WriteAttributeString("Start", EndianSwap(highlight.highlightStart).ToString());
                                 writer.WriteAttributeString("End", EndianSwap(highlight.highlightEnd).ToString());
                                 writer.WriteAttributeString("Marker", EndianSwap(highlight.highlightMarker).ToString());
-                            
+
                                 writer.WriteAttributeString("Alpha", highlight.highlightAlpha.ToString());
                                 writer.WriteAttributeString("Red", highlight.highlightRed.ToString());
                                 writer.WriteAttributeString("Green", highlight.highlightGreen.ToString());
                                 writer.WriteAttributeString("Blue", highlight.highlightBlue.ToString());
                                 writer.WriteEndElement();
-                                skipFlag = false;
                             }
-                        }
+
+                            writer.WriteEndElement();
+                            skipFlag = false;
+                        }*/
 
                     writer.WriteEndElement();
                 }
