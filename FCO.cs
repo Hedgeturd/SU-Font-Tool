@@ -300,41 +300,6 @@ namespace SonicUnleashedFCOConv {
                             writer.WriteEndElement();
                         }
 
-                        /*writer.WriteStartElement("Highlight");
-
-                        foreach (Structs.Highlight highlight in cell.HighlightList) {
-                            writer.WriteAttributeString("Start", EndianSwap(highlight.highlightStart).ToString());
-                            writer.WriteAttributeString("End", EndianSwap(highlight.highlightEnd).ToString());
-                            writer.WriteAttributeString("Marker", EndianSwap(highlight.highlightMarker).ToString());
-                            
-                            writer.WriteAttributeString("Alpha", highlight.highlightAlpha.ToString());
-                            writer.WriteAttributeString("Red", highlight.highlightRed.ToString());
-                            writer.WriteAttributeString("Green", highlight.highlightGreen.ToString());
-                            writer.WriteAttributeString("Blue", highlight.highlightBlue.ToString());
-                        }
-                        writer.WriteEndElement();*/
-
-                        /*while (skipFlag == true)
-                        {
-                            writer.WriteStartElement("Highlight");
-
-                            foreach (Structs.Highlight highlight in cell.HighlightList)
-                            {
-                                writer.WriteAttributeString("Start", EndianSwap(highlight.highlightStart).ToString());
-                                writer.WriteAttributeString("End", EndianSwap(highlight.highlightEnd).ToString());
-                                writer.WriteAttributeString("Marker", EndianSwap(highlight.highlightMarker).ToString());
-
-                                writer.WriteAttributeString("Alpha", highlight.highlightAlpha.ToString());
-                                writer.WriteAttributeString("Red", highlight.highlightRed.ToString());
-                                writer.WriteAttributeString("Green", highlight.highlightGreen.ToString());
-                                writer.WriteAttributeString("Blue", highlight.highlightBlue.ToString());
-                                writer.WriteEndElement();
-                            }
-
-                            writer.WriteEndElement();
-                            skipFlag = false;
-                        }*/
-
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
