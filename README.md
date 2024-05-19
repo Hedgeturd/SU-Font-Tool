@@ -17,4 +17,4 @@ Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting
 and thank you to [NextinHKRY](https://github.com/NextinMono) for general coding help
 
 ## Requirements
-If the tool does nothing when dragging files onto the executable you may need to download the [.NET Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=8.0) package that the tool needs to work
+If the tool does nothing when used, you may need to download the [.NET Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=8.0) package that the tool needs to work
