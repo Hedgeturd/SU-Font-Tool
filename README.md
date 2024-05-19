@@ -8,7 +8,6 @@ Text can be modified by placing translated text into the XML using [HedgeHex](ht
 Text properties can also be modified by changing the values inside the XML<br>
 
 ## To Do
-- Add support for extra FCO text features<br>
 - Clean up the project code and files
 - Possibly merge HedgeHex into the tool
 
