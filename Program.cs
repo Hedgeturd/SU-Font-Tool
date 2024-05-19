@@ -2,7 +2,7 @@
     class Program {
         static void Main(string[] args) {
             if(args.Length == 0) {
-                Console.WriteLine("SonicUnleashedFCOConv v0.1\nUsage: SonicUnleashedFCOConv <source file>");
+                Console.WriteLine("SonicUnleashedFCOConv v1.0\nUsage: SonicUnleashedFCOConv <.fco/.xml file>");
                 return;
             }
             else {
@@ -10,6 +10,7 @@
 
                 if(File.Exists(file)) {
                     if (file.EndsWith(".fco")) {
+                        Common.TempCheck();
                         FCO.FCOtoXML(args[0]);
                     }
                     if (file.EndsWith(".xml")) {
@@ -20,8 +21,6 @@
                     Console.WriteLine($"Can't find file {file}, aborting");
                     return;
                 }
-
-
             }
         }
     }

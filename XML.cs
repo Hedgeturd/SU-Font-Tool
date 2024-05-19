@@ -1,39 +1,9 @@
 using System.Xml;
 using System.Text;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
-        public static int EndianSwap(int a) {
-            byte[] x = BitConverter.GetBytes(a);
-                //if (BitConverter.IsLittleEndian)
-                Array.Reverse(x);
-                int b = BitConverter.ToInt32(x, 0);
-                return b;
-        }
-
-        static byte[] StringToByteArray(string hex) {
-            int numberChars = hex.Length;
-            byte[] bytes = new byte[numberChars / 2];
-            for (int i = 0; i < numberChars; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            }
-            return bytes;
-        }
-
-        static string PadString(string input, char fillerChar)
-        {
-            int padding = (4 - input.Length % 4) % 4;
-            return input.PadRight(input.Length + padding, fillerChar);
-        }
-
-        static void WriteStringWithoutLength(BinaryWriter writer, string value)
-        {
-            byte[] utf8Bytes = Encoding.UTF8.GetBytes(value);
-            writer.Write(utf8Bytes);
-        }
+        public static bool skipFlag = false;
 
         public static void XMLtoFCO(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
@@ -43,6 +13,7 @@ namespace SonicUnleashedFCOConv {
 
             XmlDocument xDoc = new XmlDocument();
             xDoc.Load(filePath + ".xml");
+            Common.RemoveComments(xDoc);
             XmlElement? xRoot = xDoc.DocumentElement;
 
             List<Structs.Group> groups = new List<Structs.Group>();
@@ -70,9 +41,9 @@ namespace SonicUnleashedFCOConv {
                                         if(messageNode.Name == "Message") {
                                             cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
                                             string hexString = cell.CellMessage.Replace(" ", "");
-                                            byte[] messageByteArray = StringToByteArray(hexString);
+                                            byte[] messageByteArray = Common.StringToByteArray(hexString);
                                             hexString = BitConverter.ToString(messageByteArray).Replace("-", "");
-                                            messageByteArray = StringToByteArray(hexString);
+                                            messageByteArray = Common.StringToByteArray(hexString);
 
                                             int numberOfBytes = messageByteArray.Length;
                                             cell.MessageCharAmount = numberOfBytes / 4;
@@ -151,6 +122,34 @@ namespace SonicUnleashedFCOConv {
                                         }
                                     }
 
+                                    List<Structs.Highlight> highlights = new List<Structs.Highlight>();
+
+                                    int hightlightcount = 0;
+
+                                    foreach (XmlElement highlightNode in cellNode.ChildNodes)
+                                    {
+                                        if (highlightNode.Name == "Highlight" + hightlightcount)
+                                        {
+                                            Structs.Highlight highlight = new Structs.Highlight();
+
+                                            // Cell's name
+                                            highlight.highlightStart = int.Parse(highlightNode.Attributes.GetNamedItem("Start")!.Value!);
+                                            highlight.highlightEnd = int.Parse(highlightNode.Attributes.GetNamedItem("End")!.Value!);
+                                            highlight.highlightMarker = int.Parse(highlightNode.Attributes.GetNamedItem("Marker")!.Value!);
+
+                                            highlight.highlightAlpha = byte.Parse(highlightNode.Attributes.GetNamedItem("Alpha")!.Value!);
+                                            highlight.highlightRed = byte.Parse(highlightNode.Attributes.GetNamedItem("Red")!.Value!);
+                                            highlight.highlightGreen = byte.Parse(highlightNode.Attributes.GetNamedItem("Green")!.Value!);
+                                            highlight.highlightBlue = byte.Parse(highlightNode.Attributes.GetNamedItem("Blue")!.Value!);
+
+                                            highlights.Add(highlight);
+
+                                            cell.HighlightList = highlights;
+                                            //skipFlag = true;
+                                            hightlightcount++;
+                                        }
+                                    }
+
                                     cells.Add(cell);
                                 }
                                 group.CellList = cells;
@@ -171,67 +170,96 @@ namespace SonicUnleashedFCOConv {
             BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fco", FileMode.OpenOrCreate));
             
             // Writing first 8 bytes
-            binaryWriter.Write(EndianSwap(0x00000004));
+            binaryWriter.Write(Common.EndianSwap(0x00000004));
             binaryWriter.Write(0x00000000);
 
             // Group Count
-            binaryWriter.Write(EndianSwap(groups.Count));
+            binaryWriter.Write(Common.EndianSwap(groups.Count));
             for(int i = 0; i < groups.Count; i++) {
                 // Group Name
-                binaryWriter.Write(EndianSwap(groups[i].GroupName.Length));
-                WriteStringWithoutLength(binaryWriter, PadString(groups[i].GroupName, '@'));
+                binaryWriter.Write(Common.EndianSwap(groups[i].GroupName.Length));
+                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(groups[i].GroupName, '@'));
 
                 // Cell Count
-                binaryWriter.Write(EndianSwap(groups[i].CellList.Count));
+                binaryWriter.Write(Common.EndianSwap(groups[i].CellList.Count));
 
                 for (int i2 = 0; i2 < groups[i].CellList.Count; i2++) {
                     // Cell Name
-                    binaryWriter.Write(EndianSwap(groups[i].CellList[i2].CellName.Length));
-                    WriteStringWithoutLength(binaryWriter, PadString(groups[i].CellList[i2].CellName, '@'));
+                    binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].CellName.Length));
+                    Common.WriteStringWithoutLength(binaryWriter, Common.PadString(groups[i].CellList[i2].CellName, '@'));
 
                     //Message Data
-                    binaryWriter.Write(EndianSwap(groups[i].CellList[i2].MessageCharAmount));
+                    binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].MessageCharAmount));
                     binaryWriter.Write(groups[i].CellList[i2].CellMessageWrite);
                     Console.WriteLine("Message Data Written!");
 
                     //Colour Start
-                    binaryWriter.Write(EndianSwap(0x00000004));
+                    binaryWriter.Write(Common.EndianSwap(0x00000004));
 
                     for (int i3 = 0; i3 < groups[i].CellList[i2].ColourMainList.Count; i3++) {
                         //Main Colours
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainStart));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainEnd));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainMarker));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainStart));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainEnd));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainMarker));
                         binaryWriter.Write(groups[i].CellList[i2].ColourMainList[i3].colourMainAlpha);
                         binaryWriter.Write(groups[i].CellList[i2].ColourMainList[i3].colourMainRed);
                         binaryWriter.Write(groups[i].CellList[i2].ColourMainList[i3].colourMainGreen);
                         binaryWriter.Write(groups[i].CellList[i2].ColourMainList[i3].colourMainBlue);
 
                         //Sub Colours 1
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1Start));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1End));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1Marker));
-                        binaryWriter.Write(EndianSwap(0x0000001C));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1Start));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1End));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub1List[i3].colourSub1Marker));
+                        binaryWriter.Write(Common.EndianSwap(0x0000001C));
 
                         //Sub Colours 2
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2Start));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2End));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2Marker));
-                        binaryWriter.Write(EndianSwap(0x00000001));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2Start));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2End));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourSub2List[i3].colourSub2Marker));
+                        binaryWriter.Write(Common.EndianSwap(0x00000001));
 
                         //End Colours
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainStart));
-                        binaryWriter.Write(EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainEnd));
-                        binaryWriter.Write(EndianSwap(0x00000003));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainStart));
+                        binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainEnd));
+                        binaryWriter.Write(Common.EndianSwap(0x00000003));
 
                         Console.WriteLine("Colour Data Written!");
-                    }
 
-                    //Padding
-                    binaryWriter.Write(EndianSwap(0x00000000));
-                    binaryWriter.Write(EndianSwap(0x00000000));
-                    binaryWriter.Write(EndianSwap(0x00000000));
-                    Console.WriteLine("Cell Data Written!");
+                        binaryWriter.Write(Common.EndianSwap(0x00000000));
+
+                        if (groups[i].CellList[i2].HighlightList != null) {
+                            binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].HighlightList.Count));
+
+                            for (int i4 = 0; i4 < groups[i].CellList[i2].HighlightList.Count; i4++) {
+                                binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].HighlightList[i4].highlightStart));
+                                binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].HighlightList[i4].highlightEnd));
+                                binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].HighlightList[i4].highlightMarker));
+                                binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightAlpha);
+                                binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightRed);
+                                binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightGreen);
+                                binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightBlue);
+
+                                skipFlag = true;
+                            }
+                        }
+                        /* if (groups[i].CellList[i2].HighlightList == null) {
+                            binaryWriter.Write(Common.EndianSwap(0x00000000));
+                            binaryWriter.Write(Common.EndianSwap(0x00000000));
+                            Console.WriteLine("Cell Data Written!");
+                        } */
+
+                        if (skipFlag == true) {
+                            binaryWriter.Write(Common.EndianSwap(0x00000000));
+                            Console.WriteLine("Highlight Data Written!");
+                            skipFlag = false;
+                        }
+                        else {
+                            //Padding
+                            binaryWriter.Write(Common.EndianSwap(0x00000000));
+                            binaryWriter.Write(Common.EndianSwap(0x00000000));
+                            Console.WriteLine("Cell Data Written!");
+                        }
+                    }
                 }
 
                 Console.WriteLine("Group Data Written!");

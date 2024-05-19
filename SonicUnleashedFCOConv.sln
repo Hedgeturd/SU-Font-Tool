@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonicUnleashedFCOConv", "SonicUnleashedFCOConv.csproj", "{0EE335D4-422A-4B59-84BC-41016B2C1FEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SonicUnleashedFCOConv", "SonicUnleashedFCOConv.csproj", "{A5B57920-9B79-4B91-868B-898983A0B5CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0EE335D4-422A-4B59-84BC-41016B2C1FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EE335D4-422A-4B59-84BC-41016B2C1FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EE335D4-422A-4B59-84BC-41016B2C1FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EE335D4-422A-4B59-84BC-41016B2C1FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5B57920-9B79-4B91-868B-898983A0B5CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5B57920-9B79-4B91-868B-898983A0B5CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5B57920-9B79-4B91-868B-898983A0B5CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5B57920-9B79-4B91-868B-898983A0B5CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B6B0E0B2-9202-4077-B79A-8881A27785CF}
+		SolutionGuid = {80B01C05-18E3-43FB-A3AC-C3F4C52E3E35}
 	EndGlobalSection
 EndGlobal
