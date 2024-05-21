@@ -8,8 +8,6 @@ Text messages can be modified by placing translated text into the XML using [Hed
 Text properties can be modified by changing the values inside the XML<br>
 
 ## To Do
-- Add Hex to Symbol translator
-- Merge HedgeHex translator into the tool
 - Clean up the project code and files
 
 ## Thanks
