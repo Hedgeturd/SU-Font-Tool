@@ -1,13 +1,16 @@
 using System.Xml;
 using System.Text;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace SonicUnleashedFCOConv {
     public static class FCO {
-        public static bool skipFlag = false;
-
         public static void FCOtoXML(string path) {
             // ==================================================================================
             // Reading FCO File
+
+            Common.TableAssignment();
+            Common.fcoTable = Translator.jsonFilePath;
 
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
@@ -23,20 +26,18 @@ namespace SonicUnleashedFCOConv {
 
             // Groups
             int groupCount = Common.EndianSwap(binaryReader.ReadInt32());
-            
-            Console.WriteLine("Group Count = " + groupCount);
+            //Console.WriteLine("Group Count = " + groupCount);
             
             for(int i = 0; i < groupCount; i++) {
                 Structs.Group groupData = new Structs.Group();
 
                 // Name
-                int groupNameCharsCount = Common.EndianSwap(binaryReader.ReadInt32());
-                Console.WriteLine("Group Name Chara Count = " + groupNameCharsCount);
-                groupData.GroupName = UTF8Encoding.GetString(binaryReader.ReadBytes(groupNameCharsCount));
+                /* int groupNameCharsCount = Common.EndianSwap(binaryReader.ReadInt32());
+                Console.WriteLine("Group Name Chara Count = " + groupNameCharsCount); */
+                groupData.GroupName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
 
                     while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
-                        byte afterGroupName = binaryReader.ReadByte();
-                        int afterGroupNameBig = Common.EndianSwap(afterGroupName);
+                        int afterGroupNameBig = Common.EndianSwap(binaryReader.ReadByte());
 
                         if (afterGroupNameBig == 64) {
                             // Move forward if the next byte is 64
@@ -51,7 +52,7 @@ namespace SonicUnleashedFCOConv {
                     
                 // Cells count
                 int cellCount = Common.EndianSwap(binaryReader.ReadInt32());
-                Console.WriteLine("Cell Count = " + cellCount);
+                //Console.WriteLine("Cell Count = " + cellCount);
 
                 // Cells
                 List<Structs.Cell> Cells = new List<Structs.Cell>();
@@ -59,13 +60,13 @@ namespace SonicUnleashedFCOConv {
                     Structs.Cell cellData = new Structs.Cell();
 
                     // Cell's name
-                    int cellNameCharCount = Common.EndianSwap(binaryReader.ReadInt32());
-                    Console.WriteLine("Cell Name Chara Count = " + cellNameCharCount);
-                    cellData.CellName = UTF8Encoding.GetString(binaryReader.ReadBytes(cellNameCharCount));
+                    /* int cellNameCharCount = Common.EndianSwap(binaryReader.ReadInt32());
+                    Console.WriteLine("Cell Name Chara Count = " + cellNameCharCount); */
+                    cellData.CellName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
 
                         while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
-                            byte afterCellName = binaryReader.ReadByte();
-                            int afterCellNameBig = Common.EndianSwap(afterCellName);
+                            /* byte afterCellName = binaryReader.ReadByte(); */
+                            int afterCellNameBig = Common.EndianSwap(binaryReader.ReadByte());
 
                             if (afterCellNameBig == 64) {
                                 // Move forward if the next byte is 64
@@ -79,12 +80,11 @@ namespace SonicUnleashedFCOConv {
                         }
 
                     int cellLength = Common.EndianSwap(binaryReader.ReadInt32());
-                    Console.WriteLine("Cell Length = " + cellLength);
-
+                    //Console.WriteLine("Cell Length = " + cellLength); */
                     // Read the hexadecimal data as a byte array
                     byte[] cellMessageBytes = binaryReader.ReadBytes(cellLength * 4);
-                    cellData.CellMessage = BitConverter.ToString(cellMessageBytes).Replace("-", " ");
-                    Console.WriteLine("Cell Message Read!");
+                    cellData.CellMessage = Translator.HEXtoTXT(BitConverter.ToString(cellMessageBytes).Replace("-", " "));
+                    //Console.WriteLine("Cell Message Read!");
 
                     binaryReader.ReadInt32();
 
@@ -102,7 +102,7 @@ namespace SonicUnleashedFCOConv {
                         colourMainData.colourMainBlue = binaryReader.ReadByte();
 
                         ColourMain.Add(colourMainData);
-                        Console.WriteLine("Colour Data Read!");
+                        //Console.WriteLine("Colour Data Read!");
                     }
 
                     //ColourSub1 Data
@@ -120,7 +120,7 @@ namespace SonicUnleashedFCOConv {
                         colourSub1Data.colourSub1Blue = binaryReader.ReadByte();
 
                         ColourSub1.Add(colourSub1Data);
-                        Console.WriteLine("ColourSub1 Data Read!");
+                        //Console.WriteLine("ColourSub1 Data Read!");
                     }
 
                     //ColourSub2 Data
@@ -137,12 +137,12 @@ namespace SonicUnleashedFCOConv {
                         colourSub2Data.colourSub2Green = binaryReader.ReadByte();
                         colourSub2Data.colourSub2Blue = binaryReader.ReadByte();
 
-                        int colourExtraStart = binaryReader.ReadInt32();
-                        int colourExtraEnd = binaryReader.ReadInt32();
+                        /* int colourExtraStart =  */ binaryReader.ReadInt32();
+                        /* int colourExtraEnd =  */ binaryReader.ReadInt32();
                         binaryReader.ReadInt32();
 
                         ColourSub2.Add(colourSub2Data);
-                        Console.WriteLine("ColourSub2 Data Read!");
+                        //Console.WriteLine("ColourSub2 Data Read!");
                     }
 
                     cellData.ColourMainList = ColourMain;
@@ -156,10 +156,9 @@ namespace SonicUnleashedFCOConv {
 
                     if (skipData.skip2 >= 1) {
                         StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                        sw.WriteLine(groupData.GroupName);
-                        sw.WriteLine(cellData.CellName);
+                        sw.WriteLine(groupData.GroupName + ": " + cellData.CellName);
                         sw.Close();
-                        Console.WriteLine("Temp written");
+                        //Console.WriteLine("Temp written");
                     }
 
                     List<Structs.Highlight> Highlights = new List<Structs.Highlight>();
@@ -175,8 +174,8 @@ namespace SonicUnleashedFCOConv {
                         hightlightData.highlightBlue = binaryReader.ReadByte();
 
                         Highlights.Add(hightlightData);
-                        Console.WriteLine("Highlight Data Read!");
-                        skipFlag = true;
+                        //Console.WriteLine("Highlight Data Read!");
+                        Common.skipFlag = true;
                     }
 
                     cellData.HighlightList = Highlights;
@@ -184,7 +183,7 @@ namespace SonicUnleashedFCOConv {
                     int skip3 = binaryReader.ReadInt32();
 
                     Cells.Add(cellData);
-                    Console.WriteLine("Cell Read!");
+                    //Console.WriteLine("Cell Read!");
                 }
                 
                 // Adding the cell list in the group
@@ -195,6 +194,14 @@ namespace SonicUnleashedFCOConv {
             }
 			
 	    binaryReader.Close();
+
+        if (Common.noLetter == true) {
+            Console.WriteLine("\nSome letters in the FCO are NOT in the current table and the XML has not been written\nPlease check your FCO and the temp file!");
+            Console.WriteLine("\nPress any key to exit.");
+            Console.ReadKey();
+            Environment.Exit(0);
+            return;
+        }
 
             // ==================================================================================
             // Writing XML File
@@ -209,6 +216,7 @@ namespace SonicUnleashedFCOConv {
             writer.WriteStartDocument();
 
             writer.WriteStartElement("FCO");
+            writer.WriteAttributeString("Table", Common.tableName + " " + Common.tableType);
 
             // Categories
             writer.WriteStartElement("Groups");
@@ -266,22 +274,18 @@ namespace SonicUnleashedFCOConv {
                             writer.WriteEndElement();
                         }
 
-                        StreamReader sr;
-                        sr = File.OpenText("temp.txt");
-                        string line;
+                        StreamReader sr = File.OpenText("temp.txt");
+                        string? line;
 
                         while ((line = sr.ReadLine()) != null) {
-                            if (line == group.GroupName) {
-                                Console.WriteLine(line);
-                                if ((line = sr.ReadLine()) == cell.CellName) {
-                                    skipFlag = true;
-                                    sr.Close();
-                                    break;
-                                }
+                            if (line.Contains(group.GroupName) && line.Contains(cell.CellName)) {
+                                Common.skipFlag = true;
+                                sr.Close();
+                                break;
                             }
                         }
 
-                        if (skipFlag == true)
+                        if (Common.skipFlag == true)
                         {
                             int highlightcount = 0;
                             foreach (Structs.Highlight highlight in cell.HighlightList)
@@ -299,7 +303,7 @@ namespace SonicUnleashedFCOConv {
                                 highlightcount++;
                             }
 
-                            skipFlag = false;
+                            Common.skipFlag = false;
                         }
                     writer.WriteEndElement();
                 }
@@ -309,7 +313,9 @@ namespace SonicUnleashedFCOConv {
             writer.WriteEndDocument();
 	        writer.Close();
 
-            Console.WriteLine("XML written!");
+            Console.WriteLine("\nXML written!\nPress any key to exit.");
+            Console.ReadKey();
+            Environment.Exit(0);
             return;
         }
 

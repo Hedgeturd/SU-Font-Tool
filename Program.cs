@@ -14,6 +14,7 @@
                         FCO.FCOtoXML(args[0]);
                     }
                     if (file.EndsWith(".xml")) {
+                        Common.TempCheck();
                         XML.XMLtoFCO(args[0]);
                     }
                 }

@@ -3,6 +3,72 @@ using System.Xml;
 
 namespace SonicUnleashedFCOConv {
     class Common {
+        public static string? fcoTable;
+        public static string? tableName;
+        public static string? tableType;
+        public static bool skipFlag = false;
+        public static bool noLetter = false;
+
+        public static void TableAssignment() {
+            Console.WriteLine("Please Input the number corresponding to the original location of your FCO file:");
+            Console.WriteLine("\n1: Menu\nInstall\nTown_[Country]_Common\nTown_[CountryLabo]_Common\nWorldMap");
+            Console.WriteLine("\n2: In-Stage\nEvilActionCommon\nSonicActionCommon");
+            Console.WriteLine("\n3: Tornado\nExStageTails_Common\n");
+
+            string? tableSwitch = Console.ReadLine();
+
+            if (tableSwitch == "TEST") {
+                Console.WriteLine("\nWhat is the name of the table you want to test?");
+                tableSwitch = Console.ReadLine();
+                fcoTable = "tables/" + tableSwitch + ".json";
+            }
+            else {
+                switch (tableSwitch)
+                {
+                    case "1":
+                        tableName = "Common";
+                        break;
+                    case "2":
+                        tableName = "In-Stage";
+                        break;
+                    case "3":
+                        tableName = "Tornado";
+                        break;
+                    default:
+                        Console.WriteLine("\nThis is not a valid table!\nPress any key to exit.");
+                        Console.ReadKey();
+                        Environment.Exit(0);
+                        break;
+                }
+
+                Console.WriteLine("\nPlease Input the number corresponding to the original version of your FCO file:");
+                Console.WriteLine("\n1: Retail");
+                Console.WriteLine("\n2: DLC");
+                Console.WriteLine("\n3: Preview\n");
+
+                tableSwitch = Console.ReadLine();
+                switch (tableSwitch)
+                {
+                    case "1":
+                        tableType = "Retail";
+                        break;
+                    case "2":
+                        tableType = "DLC";
+                        break;
+                    case "3":
+                        tableType = "Preview";
+                        break;
+                    default:
+                        Console.WriteLine("\nThis is not a valid type!\nPress any key to exit.");
+                        Console.ReadKey();
+                        Environment.Exit(0);
+                        break;
+                }
+
+                fcoTable = "tables/" + tableName + " " + tableType + ".json";
+            }
+        }
+
         public static void TempCheck() {
             FileStream fs;
             if (File.Exists("temp.txt")) {
@@ -51,7 +117,7 @@ namespace SonicUnleashedFCOConv {
             // Remove comment nodes
             for (int i = node.ChildNodes.Count - 1; i >= 0; i--)
             {
-                XmlNode child = node.ChildNodes[i];
+                XmlNode? child = node.ChildNodes[i];
                 if (child.NodeType == XmlNodeType.Comment)
                 {
                     node.RemoveChild(child);

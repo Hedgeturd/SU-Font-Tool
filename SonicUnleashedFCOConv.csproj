@@ -7,14 +7,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-	<Compile Remove="FCO - Copy.cs" />
-    <Compile Remove="XTB.cs" />
-  </ItemGroup>
+   <PropertyGroup>
+    <SourceFolder>$(MSBuildProjectDirectory)\tables\</SourceFolder>
+    <DestinationFolder>$(MSBuildProjectDirectory)\bin\$(Configuration)\net8.0\tables\</DestinationFolder>
+  </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="FCO - Copy.cs" />
-    <None Include="XTB.cs" />
-  </ItemGroup>
-
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <ItemGroup>
+      <FilesToCopy Include="$(SourceFolder)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(DestinationFolder)%(RecursiveDir)" />
+  </Target>
+  
 </Project>

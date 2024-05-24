@@ -1,10 +1,9 @@
 using System.Xml;
 using System.Text;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
-        public static bool skipFlag = false;
-
         public static void XMLtoFCO(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
 			
@@ -18,8 +17,13 @@ namespace SonicUnleashedFCOConv {
 
             List<Structs.Group> groups = new List<Structs.Group>();
 
-            if(xRoot != null) {
-                foreach(XmlElement node in xRoot) {
+            if(xRoot != null && xRoot.Name == "FCO") {
+
+                /* Translator.jsonFilePath = xRoot.Attributes.GetNamedItem("Table")!.Value!; */
+                Common.fcoTable = "tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
+                Translator.jsonFilePath = Common.fcoTable;
+
+                foreach(XmlElement node in xRoot) {                    
                     // Groups
                     if(node.Name == "Groups") {
                         foreach(XmlElement groupNode in node.ChildNodes) {
@@ -40,13 +44,16 @@ namespace SonicUnleashedFCOConv {
                                     foreach (XmlElement messageNode in cellNode.ChildNodes) {   
                                         if(messageNode.Name == "Message") {
                                             cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
-                                            string hexString = cell.CellMessage.Replace(" ", "");
+                                            string hexString = Translator.TXTtoHEX(cell.CellMessage);
+
+                                            /* cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!; */
+                                            hexString = hexString.Replace(" ", "");
                                             byte[] messageByteArray = Common.StringToByteArray(hexString);
-                                            hexString = BitConverter.ToString(messageByteArray).Replace("-", "");
+                                            /* hexString = BitConverter.ToString(messageByteArray).Replace("-", ""); */
                                             messageByteArray = Common.StringToByteArray(hexString);
 
-                                            int numberOfBytes = messageByteArray.Length;
-                                            cell.MessageCharAmount = numberOfBytes / 4;
+                                            int numberOfBytes = hexString.Length;
+                                            cell.MessageCharAmount = numberOfBytes / 8;
 
                                             cell.CellMessageWrite = messageByteArray;
                                         }
@@ -145,7 +152,7 @@ namespace SonicUnleashedFCOConv {
                                             highlights.Add(highlight);
 
                                             cell.HighlightList = highlights;
-                                            //skipFlag = true;
+                                            //Common.skipFlag = true;
                                             hightlightcount++;
                                         }
                                     }
@@ -191,7 +198,7 @@ namespace SonicUnleashedFCOConv {
                     //Message Data
                     binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].MessageCharAmount));
                     binaryWriter.Write(groups[i].CellList[i2].CellMessageWrite);
-                    Console.WriteLine("Message Data Written!");
+                    //Console.WriteLine("Message Data Written!");
 
                     //Colour Start
                     binaryWriter.Write(Common.EndianSwap(0x00000004));
@@ -223,7 +230,7 @@ namespace SonicUnleashedFCOConv {
                         binaryWriter.Write(Common.EndianSwap(groups[i].CellList[i2].ColourMainList[i3].colourMainEnd));
                         binaryWriter.Write(Common.EndianSwap(0x00000003));
 
-                        Console.WriteLine("Colour Data Written!");
+                        //Console.WriteLine("Colour Data Written!");
 
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
 
@@ -239,32 +246,34 @@ namespace SonicUnleashedFCOConv {
                                 binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightGreen);
                                 binaryWriter.Write(groups[i].CellList[i2].HighlightList[i4].highlightBlue);
 
-                                skipFlag = true;
+                                Common.skipFlag = true;
                             }
                         }
-                        /* if (groups[i].CellList[i2].HighlightList == null) {
-                            binaryWriter.Write(Common.EndianSwap(0x00000000));
-                            binaryWriter.Write(Common.EndianSwap(0x00000000));
-                            Console.WriteLine("Cell Data Written!");
-                        } */
 
-                        if (skipFlag == true) {
+                        if (Common.skipFlag == true) {
                             binaryWriter.Write(Common.EndianSwap(0x00000000));
-                            Console.WriteLine("Highlight Data Written!");
-                            skipFlag = false;
+                            //Console.WriteLine("Highlight Data Written!");
+                            Common.skipFlag = false;
                         }
                         else {
                             //Padding
                             binaryWriter.Write(Common.EndianSwap(0x00000000));
                             binaryWriter.Write(Common.EndianSwap(0x00000000));
-                            Console.WriteLine("Cell Data Written!");
+                            //Console.WriteLine("Cell Data Written!");
                         }
                     }
                 }
 
-                Console.WriteLine("Group Data Written!");
+                //Console.WriteLine("Group Data Written!");
             }
 	        binaryWriter.Close();
+
+            if (Common.noLetter == true) {
+                Console.WriteLine("Some letters in the XML are NOT in the current table and have been removed\nPlease check your XML and the temp file!\n");
+            }
+            Console.WriteLine("FCO written!\nPress any key to exit.");
+            Console.ReadKey();
+            Environment.Exit(0);
             return;
         }
 
