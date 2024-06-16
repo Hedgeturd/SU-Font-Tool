@@ -77,17 +77,23 @@ namespace SonicUnleashedFCOConv {
 
         static string JSONRead(string searchMode, string hexString) {
             // Read the JSON file
-            /* string jsonString = File.ReadAllText(jsonFilePath); */
 
             // Parse the JSON string into a JsonDocument
+
+            if (File.Exists(jsonFilePath) == false) {
+                Console.WriteLine("\nThis table does not exist\nPlease check your files!\nPress any key to exit.");
+                Console.ReadKey();
+                Environment.Exit(0);
+            }
+
             using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
 
             if (searchMode == "HEXtoTXT") {
-                string searchResult = /* return */ SearchHexStringForLetter(doc.RootElement, hexString);
+                string searchResult = SearchHexStringForLetter(doc.RootElement, hexString);
                 if (searchResult == "?MISSING?") {
                     jsonFilePath = "tables/Icons.json";
                     using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
-                    searchResult = /* return */ SearchHexStringForLetter(docIcon.RootElement, hexString);
+                    searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
                     jsonFilePath = Common.fcoTable;
 
                     if (searchResult == "?MISSING?") {
@@ -120,12 +126,12 @@ namespace SonicUnleashedFCOConv {
             }
             if (searchMode == "TXTtoHEX") {
                 if (hexString.Contains("{")) {
-                    string searchResult = /* return */ SearchLetterForHexString(doc.RootElement, hexString);
+                    string searchResult = SearchLetterForHexString(doc.RootElement, hexString);
                     
                     if (searchResult == null) {
                         jsonFilePath = "tables/Icons.json";
                         using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
-                        searchResult = /* return */ SearchLetterForHexString(docIcon.RootElement, hexString);
+                        searchResult = SearchLetterForHexString(docIcon.RootElement, hexString);
                         jsonFilePath = Common.fcoTable;
 
                         if (searchResult == null) {
