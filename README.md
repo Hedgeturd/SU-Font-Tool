@@ -8,6 +8,7 @@ Text messages can be modified by placing translated text into the XML using [Hed
 Text properties can be modified by changing the values inside the XML<br>
 
 ## To Do
+- Make a new release! (16/06/2024)
 - Clean up the project code and files
 
 ## Thanks
