@@ -3,12 +3,45 @@ using System.Xml;
 
 namespace SonicUnleashedFCOConv {
     class Common {
-        public static string? fcoTable;
-        public static string? tableName;
-        public static string? tableType;
-        public static bool skipFlag = false;
-        public static bool noLetter = false;
+        public static string? fcoTable, tableName, tableType;
+        public static bool skipFlag = false, noLetter = false;
 
+        // Common Functions
+        public static void TempCheck(int mode) {
+            FileStream fs;
+            
+            if (File.Exists("temp.txt")) {
+                File.Delete("temp.txt");
+                if (mode == 1) {
+                    fs = File.Create("temp.txt");
+                    fs.Close();        
+                    Console.WriteLine("Restored Temp File");
+                }
+                Console.WriteLine("Deleted Temp File");
+            }
+            else {
+                fs = File.Create("temp.txt");
+                fs.Close();
+            }
+        }
+
+        public static bool ErrorCheck() {
+            if (Common.noLetter == true) {
+                //Console.WriteLine("\nSome characters in the FCO are NOT in the current table and the XML has not been written!");
+                Console.WriteLine("\nMissing Characters between " + "FCO" + " and the " + tableName + " " + tableType + " Table, XML writing aborted!");
+                Console.WriteLine("Please check your FCO and the temp file!");
+                return true;
+            }
+            if (FCO.noFoot == true) {
+                Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FCO.address).ToString("X")  + ".");
+                Console.WriteLine("There is a structural abnormality within the FCO file!");
+                return true;
+            }
+
+            return false;
+        }
+        
+        // FCO and FTE Functions
         public static void TableAssignment() {
             Console.WriteLine("Please Input the number corresponding to the original location of your FCO file:");
             Console.WriteLine("\n1: Menu\nInstall\nTown_[Country]_Common\nTown_[CountryLabo]_Common\nWorldMap");
@@ -23,8 +56,7 @@ namespace SonicUnleashedFCOConv {
                 fcoTable = "tables/" + tableSwitch + ".json";
             }
             else {
-                switch (tableSwitch)
-                {
+                switch (tableSwitch) {
                     case "1":
                         tableName = "Common";
                         break;
@@ -36,8 +68,7 @@ namespace SonicUnleashedFCOConv {
                         break;
                     default:
                         Console.WriteLine("\nThis is not a valid table!\nPress any key to exit.");
-                        Console.ReadKey();
-                        Environment.Exit(0);
+                        Console.Read();
                         break;
                 }
 
@@ -47,8 +78,7 @@ namespace SonicUnleashedFCOConv {
                 Console.WriteLine("\n3: Preview\n");
 
                 tableSwitch = Console.ReadLine();
-                switch (tableSwitch)
-                {
+                switch (tableSwitch) {
                     case "1":
                         tableType = "Retail";
                         break;
@@ -69,18 +99,6 @@ namespace SonicUnleashedFCOConv {
             }
         }
 
-        public static void TempCheck() {
-            FileStream fs;
-            if (File.Exists("temp.txt")) {
-                File.Delete("temp.txt");
-                fs = File.Create("temp.txt");
-                fs.Close();
-            }
-            else {
-                fs = File.Create("temp.txt");
-                fs.Close();
-            }
-        }
         public static int EndianSwap(int a) {
             byte[] x = BitConverter.GetBytes(a);
             Array.Reverse(x);
@@ -88,6 +106,28 @@ namespace SonicUnleashedFCOConv {
             return b;
         }
 
+        public static float EndianSwapFloat(float a) {
+            byte[] x = BitConverter.GetBytes(a);
+            Array.Reverse(x);
+            float b = BitConverter.ToSingle(x, 0);
+            return b;
+        }
+
+        public static void SkipPadding(BinaryReader binaryReader) {
+            while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
+                int padding = Common.EndianSwap(binaryReader.ReadByte());
+
+                if (padding == 64) {
+                    binaryReader.BaseStream.Seek(1, SeekOrigin.Current);
+                }
+                else if (padding < 64) {
+                    binaryReader.BaseStream.Seek(-1, SeekOrigin.Current);
+                    break;
+                }
+            }
+        }
+
+        // XML Functions
         public static byte[] StringToByteArray(string hex) {
             int numberChars = hex.Length;
             byte[] bytes = new byte[numberChars / 2];

@@ -1,17 +1,12 @@
-using System.Data;
 using System.Text.Json;
 
 namespace SonicUnleashedFCOConv {
     class Translator {
-        public static string jsonFilePath = Common.fcoTable;
+        // To whomever this may concern, I legit don't even know how I wrote all this.. It may have been a 2AM job...
+        public static string? jsonFilePath = Common.fcoTable;
 
         public static string HEXtoTXT(String hex) {
             List<string> chunks = SplitStringIntoChunks("HEXtoTXT", hex, 11);
-
-            /* foreach (var chunk in chunks) {
-                Console.WriteLine(chunk);
-            } */
-
             return JoinChunks(chunks);
         }
 
@@ -77,7 +72,6 @@ namespace SonicUnleashedFCOConv {
 
         static string JSONRead(string searchMode, string hexString) {
             // Read the JSON file
-
             // Parse the JSON string into a JsonDocument
 
             if (File.Exists(jsonFilePath) == false) {

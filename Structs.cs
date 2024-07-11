@@ -1,6 +1,7 @@
-﻿public static class Structs {
-    public struct Highlight
-    {
+﻿using System.Diagnostics.Contracts;
+
+public static class Structs {
+    public struct Highlight {
         public int highlightStart { get; set; }
         public int highlightEnd { get; set; }
         public int highlightMarker { get; set; }
@@ -10,16 +11,14 @@
         public byte highlightBlue { get; set; }
     }
 
-    public struct Skip
-    {
+    public struct Skip {
         public int skip1 { get; set; }
         public int skip2 { get; set; }
         public int skip2Big { get; set; }
         public int skip3 { get; set; }
     }
 
-    public struct ColourSub2
-    {
+    public struct ColourSub2 {
         public int colourSub2Start { get; set; }
         public int colourSub2End { get; set; }
         public int colourSub2Marker { get; set; }
@@ -29,8 +28,7 @@
         public byte colourSub2Blue { get; set; }
     }
 
-    public struct ColourSub1
-    {
+    public struct ColourSub1 {
         public int colourSub1Start { get; set; }
         public int colourSub1End { get; set; }
         public int colourSub1Marker { get; set; }
@@ -40,8 +38,7 @@
         public byte colourSub1Blue { get; set; }
     }
 
-    public struct ColourMain
-    {
+    public struct ColourMain {
         public int colourMainStart { get; set; }
         public int colourMainEnd { get; set; }
         public int colourMainMarker { get; set; }
@@ -51,8 +48,7 @@
         public byte colourMainBlue { get; set; }
     }
 
-    public struct Cell
-    {
+    public struct Cell {
         public string CellName { get; set; }
         public byte[] CellNameWrite { get; set; }
         public int CellNameCharsCount { get; set; }
@@ -65,10 +61,24 @@
         public List<Highlight> HighlightList { get; set; }
     }
 
-    public struct Group
-    {
+    public struct Group {
         public string GroupName { get; set; }
         public int GroupNameCharsCount { get; set; }
         public List<Cell> CellList { get; set; }
+    }
+
+    public struct Texture {
+        public string TextureName { get; set; }
+        public int TextureSizeX { get; set; }
+        public int TextureSizeY {get; set; }
+    }
+
+    public struct Character {
+        public int TextureIndex { get; set; }
+        public int CharID { get; set; }
+        public float CharPoint1X { get; set; }
+        public float CharPoint1Y { get; set; }
+        public float CharPoint2X { get; set; }
+        public float CharPoint2Y { get; set; }
     }
 }

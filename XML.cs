@@ -1,35 +1,28 @@
 using System.Xml;
 using System.Text;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
-        public static void XMLtoFCO(string path) {
+        public static bool returnEarly = false;
+        public static List<Structs.Group> groups = new List<Structs.Group>();
+        public static void Read(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
-			
-            // ==================================================================================
-            // Reading XML File
 
             XmlDocument xDoc = new XmlDocument();
             xDoc.Load(filePath + ".xml");
             Common.RemoveComments(xDoc);
             XmlElement? xRoot = xDoc.DocumentElement;
 
-            List<Structs.Group> groups = new List<Structs.Group>();
-
             if(xRoot != null && xRoot.Name == "FCO") {
-
-                /* Translator.jsonFilePath = xRoot.Attributes.GetNamedItem("Table")!.Value!; */
                 Common.fcoTable = "tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
                 Translator.jsonFilePath = Common.fcoTable;
 
                 foreach(XmlElement node in xRoot) {                    
-                    // Groups
                     if(node.Name == "Groups") {
                         foreach(XmlElement groupNode in node.ChildNodes) {
                             Structs.Group group = new Structs.Group();
 
-                            // Category's name
+                            // Group's name
                             group.GroupName = groupNode.Attributes.GetNamedItem("Name")!.Value!;
 
                             List<Structs.Cell> cells = new List<Structs.Cell>();
@@ -46,10 +39,8 @@ namespace SonicUnleashedFCOConv {
                                             cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
                                             string hexString = Translator.TXTtoHEX(cell.CellMessage);
 
-                                            /* cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!; */
                                             hexString = hexString.Replace(" ", "");
                                             byte[] messageByteArray = Common.StringToByteArray(hexString);
-                                            /* hexString = BitConverter.ToString(messageByteArray).Replace("-", ""); */
                                             messageByteArray = Common.StringToByteArray(hexString);
 
                                             int numberOfBytes = hexString.Length;
@@ -63,17 +54,16 @@ namespace SonicUnleashedFCOConv {
 
                                     foreach(XmlElement colourNode in cellNode.ChildNodes) {   
                                         if(colourNode.Name == "ColourMain") {
-                                            Structs.ColourMain colourMain = new Structs.ColourMain();
+                                            Structs.ColourMain colourMain = new Structs.ColourMain() {
+                                                colourMainStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourMainEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourMainMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
 
-                                            // Cell's name
-                                            colourMain.colourMainStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!);
-                                            colourMain.colourMainEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!);
-                                            colourMain.colourMainMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!);
-
-                                            colourMain.colourMainAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!);
-                                            colourMain.colourMainRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!);
-                                            colourMain.colourMainGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!);
-                                            colourMain.colourMainBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!);
+                                                colourMainAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourMainRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourMainGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourMainBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            };
 
                                             coloursMain.Add(colourMain);
 
@@ -87,17 +77,15 @@ namespace SonicUnleashedFCOConv {
                                     {
                                         if (colourNode.Name == "ColourSub1")
                                         {
-                                            Structs.ColourSub1 colourSub1 = new Structs.ColourSub1();
-
-                                            // Cell's name
-                                            colourSub1.colourSub1Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!);
-                                            colourSub1.colourSub1End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!);
-                                            colourSub1.colourSub1Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!);
-
-                                            colourSub1.colourSub1Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!);
-                                            colourSub1.colourSub1Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!);
-                                            colourSub1.colourSub1Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!);
-                                            colourSub1.colourSub1Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!);
+                                            Structs.ColourSub1 colourSub1 = new Structs.ColourSub1() {
+                                                colourSub1Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourSub1End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourSub1Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourSub1Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourSub1Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourSub1Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourSub1Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            };
 
                                             coloursSub1.Add(colourSub1);
 
@@ -111,17 +99,15 @@ namespace SonicUnleashedFCOConv {
                                     {
                                         if (colourNode.Name == "ColourSub2")
                                         {
-                                            Structs.ColourSub2 colourSub2 = new Structs.ColourSub2();
-
-                                            // Cell's name
-                                            colourSub2.colourSub2Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!);
-                                            colourSub2.colourSub2End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!);
-                                            colourSub2.colourSub2Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!);
-
-                                            colourSub2.colourSub2Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!);
-                                            colourSub2.colourSub2Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!);
-                                            colourSub2.colourSub2Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!);
-                                            colourSub2.colourSub2Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!);
+                                            Structs.ColourSub2 colourSub2 = new Structs.ColourSub2() {
+                                                colourSub2Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourSub2End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourSub2Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourSub2Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourSub2Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourSub2Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourSub2Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            };
 
                                             coloursSub2.Add(colourSub2);
 
@@ -137,17 +123,15 @@ namespace SonicUnleashedFCOConv {
                                     {
                                         if (highlightNode.Name == "Highlight" + hightlightcount)
                                         {
-                                            Structs.Highlight highlight = new Structs.Highlight();
-
-                                            // Cell's name
-                                            highlight.highlightStart = int.Parse(highlightNode.Attributes.GetNamedItem("Start")!.Value!);
-                                            highlight.highlightEnd = int.Parse(highlightNode.Attributes.GetNamedItem("End")!.Value!);
-                                            highlight.highlightMarker = int.Parse(highlightNode.Attributes.GetNamedItem("Marker")!.Value!);
-
-                                            highlight.highlightAlpha = byte.Parse(highlightNode.Attributes.GetNamedItem("Alpha")!.Value!);
-                                            highlight.highlightRed = byte.Parse(highlightNode.Attributes.GetNamedItem("Red")!.Value!);
-                                            highlight.highlightGreen = byte.Parse(highlightNode.Attributes.GetNamedItem("Green")!.Value!);
-                                            highlight.highlightBlue = byte.Parse(highlightNode.Attributes.GetNamedItem("Blue")!.Value!);
+                                            Structs.Highlight highlight = new Structs.Highlight() {
+                                                highlightStart = int.Parse(highlightNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                highlightEnd = int.Parse(highlightNode.Attributes.GetNamedItem("End")!.Value!),
+                                                highlightMarker = int.Parse(highlightNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                highlightAlpha = byte.Parse(highlightNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                highlightRed = byte.Parse(highlightNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                highlightGreen = byte.Parse(highlightNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                highlightBlue = byte.Parse(highlightNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            };
 
                                             highlights.Add(highlight);
 
@@ -167,9 +151,21 @@ namespace SonicUnleashedFCOConv {
                 }
             }
 
-            // ==================================================================================
-            // Writing FCO File
+            if(xRoot != null && xRoot.Name == "FTE") {
+                Console.WriteLine("Program recognised XML as FTE Format");
+                returnEarly = true;
+            }
 
+            Console.WriteLine("XML read!");
+            return;
+        }
+
+        public static void Write(string path) {
+            if (returnEarly == true) {
+                return;
+            }
+
+            string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             File.Delete(Path.Combine(filePath + ".fco"));
 
             Encoder UTF16 = Encoding.Unicode.GetEncoder();
@@ -268,12 +264,12 @@ namespace SonicUnleashedFCOConv {
             }
 	        binaryWriter.Close();
 
-            if (Common.noLetter == true) {
-                Console.WriteLine("Some letters in the XML are NOT in the current table and have been removed\nPlease check your XML and the temp file!\n");
-            }
-            Console.WriteLine("FCO written!\nPress any key to exit.");
-            Console.ReadKey();
-            Environment.Exit(0);
+            /* if (Common.noLetter == true) {
+                Console.WriteLine("Some letters in the XML are NOT in the current table and have been removed!");
+                Console.WriteLine("Please check your XML and the temp file!");
+            } */
+
+            Console.WriteLine("FCO written!");
             return;
         }
 
