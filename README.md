@@ -5,11 +5,13 @@ A tool to convert Unleashed FCO files into XML files and vice versa
 As simple as dragging and dropping the supported file formats onto the executable<br>
 
 Text messages can be modified by placing translated text into the XML using [HedgeHex](https://github.com/NextinMono/HedgeHex)<br>
+(This is being removed for a better system :D)<br>
 Text properties can be modified by changing the values inside the XML<br>
 
 ## To Do
-- Make a new release! (16/06/2024)
-- Clean up the project code and files
+- Make a new release!
+- <s>Clean up the project code and files</s>
+- Finish FTE Writer
 
 ## Thanks
 Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
