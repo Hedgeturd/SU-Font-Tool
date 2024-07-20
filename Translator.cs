@@ -2,8 +2,9 @@ using System.Text.Json;
 
 namespace SonicUnleashedFCOConv {
     class Translator {
-        // To whomever this may concern, I legit don't even know how I wrote all this.. It may have been a 2AM job...
+        // To whomever this may concern, I legit don't even know how I wrote some of this.. It may have been a 2AM job...
         public static string? jsonFilePath = Common.fcoTable;
+        public static List<string> missinglist = new List<string>();
 
         public static string HEXtoTXT(String hex) {
             List<string> chunks = SplitStringIntoChunks("HEXtoTXT", hex, 11);
@@ -84,6 +85,7 @@ namespace SonicUnleashedFCOConv {
 
             if (searchMode == "HEXtoTXT") {
                 string searchResult = SearchHexStringForLetter(doc.RootElement, hexString);
+
                 if (searchResult == "?MISSING?") {
                     jsonFilePath = "tables/Icons.json";
                     using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
@@ -92,12 +94,7 @@ namespace SonicUnleashedFCOConv {
 
                     if (searchResult == "?MISSING?") {
                         Common.noLetter = true;
-
-                        StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                        sw.WriteLine("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
-                        sw.Close();
-                        //Console.WriteLine("Temp written");
-
+                        missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
                         return null;
                     }
 
@@ -106,12 +103,7 @@ namespace SonicUnleashedFCOConv {
                 else {
                     if (searchResult == "?MISSING") {
                         Common.noLetter = true;
-
-                        StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                        sw.WriteLine("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
-                        sw.Close();
-                        //Console.WriteLine("Temp written");
-
+                        missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
                         return null;
                     }
 
@@ -130,12 +122,7 @@ namespace SonicUnleashedFCOConv {
 
                         if (searchResult == null) {
                             Common.noLetter = true;
-
-                            StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                            sw.WriteLine("letter: " + hexString + " not found in the table " + Common.tableName + "!");
-                            sw.Close();
-                            //Console.WriteLine("Temp written");
-
+                            missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
                             return null;
                         }
 
@@ -149,12 +136,7 @@ namespace SonicUnleashedFCOConv {
 
                     if (searchResult == null) {
                         Common.noLetter = true;
-
-                        StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                        sw.WriteLine("letter: " + hexString + " not found in the table " + Common.tableName + "!");
-                        sw.Close();
-                        //Console.WriteLine("Temp written");
-
+                        missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
                         return null;
                     }
 

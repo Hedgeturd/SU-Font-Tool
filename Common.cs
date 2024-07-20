@@ -3,33 +3,56 @@ using System.Xml;
 
 namespace SonicUnleashedFCOConv {
     class Common {
-        public static string? fcoTable, tableName, tableType;
+        public static string? fcoTable, tableName, tableType, tableLang;
         public static bool skipFlag = false, noLetter = false;
 
         // Common Functions
-        public static void TempCheck(int mode) {
-            FileStream fs;
-            
-            if (File.Exists("temp.txt")) {
-                File.Delete("temp.txt");
-                if (mode == 1) {
+        public static void TempCheck(int mode) {    // This is no longer needed but will be kept for future use            
+            if (mode == 1) {
+                FileStream fs;
+                
+                if (File.Exists("temp.txt")) {
+                    File.Delete("temp.txt");
                     fs = File.Create("temp.txt");
-                    fs.Close();        
-                    Console.WriteLine("Restored Temp File");
+                    fs.Close();
+
+                    Console.WriteLine("Deleted and Restored Temp File.");
                 }
-                Console.WriteLine("Deleted Temp File");
+                else {
+                    fs = File.Create("temp.txt");
+                    Console.WriteLine("Created Temp File.");
+                    fs.Close();
+                }
             }
-            else {
-                fs = File.Create("temp.txt");
-                fs.Close();
+            if (mode == 2) {
+                if (Common.noLetter == true) {
+                    return;
+                }
+                
+                File.Delete("temp.txt");
             }
         }
 
         public static bool ErrorCheck() {
             if (Common.noLetter == true) {
-                //Console.WriteLine("\nSome characters in the FCO are NOT in the current table and the XML has not been written!");
-                Console.WriteLine("\nMissing Characters between " + "FCO" + " and the " + tableName + " " + tableType + " Table, XML writing aborted!");
-                Console.WriteLine("Please check your FCO and the temp file!");
+                TempCheck(1);
+                StreamWriter sw = new StreamWriter("temp.txt", append: true);
+                for (int i = 0; i < Translator.missinglist.Count; i++) {
+                    sw.WriteLine(Translator.missinglist[i]);
+                }                
+                sw.Close();
+
+                if (Path.GetExtension(Program.fileName) == ".fco") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + tableLang + "/" + tableName + " " + tableType + " Table");
+                    Console.WriteLine("XML writing aborted!");
+                }
+                if (Path.GetExtension(Program.fileName) == ".xml") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
+                    Console.WriteLine("FCO writing aborted!");
+                }
+
+                Console.WriteLine("Please check your temp file!");
+
                 return true;
             }
             if (FCO.noFoot == true) {
@@ -40,10 +63,24 @@ namespace SonicUnleashedFCOConv {
 
             return false;
         }
+
+        public static void ExtractCheck() {
+            Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
+            string choice = Console.ReadLine();
+            if (choice == "Y" || choice == "y") {
+                //Console.WriteLine("Please input the path of your DDS Character Pool.");
+                //string ddsPath = Console.ReadLine();
+                DDS.Process(Program.fileDir + "\\" + Program.fileName);
+            }
+            else {
+                return;
+            }
+        }
         
         // FCO and FTE Functions
         public static void TableAssignment() {
             Console.WriteLine("Please Input the number corresponding to the original location of your FCO file:");
+
             Console.WriteLine("\n1: Menu\nInstall\nTown_[Country]_Common\nTown_[CountryLabo]_Common\nWorldMap");
             Console.WriteLine("\n2: In-Stage\nEvilActionCommon\nSonicActionCommon");
             Console.WriteLine("\n3: Tornado\nExStageTails_Common\n");
@@ -67,15 +104,14 @@ namespace SonicUnleashedFCOConv {
                         tableName = "Tornado";
                         break;
                     default:
-                        Console.WriteLine("\nThis is not a valid table!\nPress any key to exit.");
+                        Console.WriteLine("\nThis is not a valid table selection!\nPress any key to exit.");
                         Console.Read();
-                        break;
+                        Environment.Exit(0);
+                        return;
                 }
 
                 Console.WriteLine("\nPlease Input the number corresponding to the original version of your FCO file:");
-                Console.WriteLine("\n1: Retail");
-                Console.WriteLine("\n2: DLC");
-                Console.WriteLine("\n3: Preview\n");
+                Console.WriteLine("\n1: Retail\n2: DLC\n3: Preview\n");
 
                 tableSwitch = Console.ReadLine();
                 switch (tableSwitch) {
@@ -89,13 +125,43 @@ namespace SonicUnleashedFCOConv {
                         tableType = "Preview";
                         break;
                     default:
-                        Console.WriteLine("\nThis is not a valid type!\nPress any key to exit.");
-                        Console.ReadKey();
+                        Console.WriteLine("\nThis is not a valid type selection!\nPress any key to exit.");
+                        Console.Read();
                         Environment.Exit(0);
-                        break;
+                        return;
                 }
 
-                fcoTable = "tables/" + tableName + " " + tableType + ".json";
+                Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
+                Console.WriteLine("\n1: English\n2: French\n3: German\n4: Italian\n5: Japanese\n6: Spanish\n");
+
+                tableSwitch = Console.ReadLine();
+                switch (tableSwitch) {
+                    case "1":
+                        tableLang = "English";
+                        break;
+                    case "2":
+                        tableLang = "French";
+                        break;
+                    case "3":
+                        tableLang = "German";
+                        break;
+                    case "4":
+                        tableLang = "Italian";
+                        break;
+                    case "5":
+                        tableLang = "Japanese";
+                        break;
+                    case "6":
+                        tableLang = "Spanish";
+                        break;
+                    default:
+                        Console.WriteLine("\nThis is not a valid language selection!\nPress any key to exit.");
+                        Console.Read();
+                        Environment.Exit(0);
+                        return;
+                }
+
+                fcoTable = "tables/" + tableLang + "/" + tableName + " " + tableType + ".json";
             }
         }
 

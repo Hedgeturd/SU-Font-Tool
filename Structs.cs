@@ -75,7 +75,7 @@ public static class Structs {
 
     public struct Character {
         public int TextureIndex { get; set; }
-        public int CharID { get; set; }
+        public string CharID { get; set; }
         public float CharPoint1X { get; set; }
         public float CharPoint1Y { get; set; }
         public float CharPoint2X { get; set; }

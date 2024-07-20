@@ -6,7 +6,7 @@ namespace SonicUnleashedFCOConv {
         public static List<Structs.Texture> textures = new List<Structs.Texture>();
         public static List<Structs.Character> characters = new List<Structs.Character>();
         
-        public static void Read(string path) {
+        public static void ReadFTE(string path) {
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
             Encoding Unicode = Encoding.GetEncoding("Unicode");
@@ -33,6 +33,7 @@ namespace SonicUnleashedFCOConv {
 
             // Characters
             int charaCount = Common.EndianSwap(binaryReader.ReadInt32());
+
             int CurrentID = 100;
             bool IndexChange = false;
 
@@ -46,7 +47,7 @@ namespace SonicUnleashedFCOConv {
                     IndexChange = true;
                 }
 
-                charaData.CharID = CurrentID;
+                charaData.CharID = CurrentID.ToString("X8");
 
                 charaData.CharPoint1X = textures[charaData.TextureIndex].TextureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
                 charaData.CharPoint1Y = textures[charaData.TextureIndex].TextureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
@@ -62,7 +63,7 @@ namespace SonicUnleashedFCOConv {
             return;
         }
 
-        public static void Write(string path) {
+        public static void WriteXML(string path) {
             File.Delete(Path.Combine(Path.GetFileNameWithoutExtension(path) + ".xml"));
 
             var xmlWriterSettings = new XmlWriterSettings{ Indent = true };
@@ -88,7 +89,7 @@ namespace SonicUnleashedFCOConv {
             foreach(Structs.Character character in characters) {
                 writer.WriteStartElement("Character");
                 writer.WriteAttributeString("TextureIndex", character.TextureIndex.ToString());
-                writer.WriteAttributeString("ConverseID", character.CharID.ToString("X"));
+                writer.WriteAttributeString("ConverseID", character.CharID);
                 writer.WriteAttributeString("Point1_X", character.CharPoint1X.ToString());
                 writer.WriteAttributeString("Point1_Y", character.CharPoint1Y.ToString());
                 writer.WriteAttributeString("Point2_X", character.CharPoint2X.ToString());
@@ -99,16 +100,12 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteEndDocument();
 	        writer.Close();
+
+            textures.Clear();
+            characters.Clear();
+
             Console.WriteLine("XML written!");
             return;
         }
-
-        public static Structs.Highlight Highlight { get; set; }
-        public static Structs.Skip Skip { get; set; }
-        public static Structs.ColourSub2 ColourSub2 { get; set; }
-        public static Structs.ColourSub1 ColourSub1 { get; set; }
-        public static Structs.ColourMain ColourMain { get; set; }
-        public static Structs.Cell Cell { get; set; }
-        public static Structs.Group Group { get; set; }
     }
 }
