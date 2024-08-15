@@ -2,7 +2,9 @@
 A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files into XML files and vice versa
 
 ## Usage
-```SonicUnleashedFCOConv <Path to .fte/.fco/.xml>```<br>
+```
+SonicUnleashedFCOConv <Path to .fte/.fco/.xml>
+```
 You can also simply drag and drop supported file formats onto the executable.
 
 ## To Do
