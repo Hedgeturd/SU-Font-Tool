@@ -9,7 +9,7 @@ You can also simply drag and drop supported file formats onto the executable.
 
 ## To Do
 - Make a new release!
-- (Try) Add DDS Support
+- (Try) Add proper DDS Support
 
 ## Thanks
 Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
