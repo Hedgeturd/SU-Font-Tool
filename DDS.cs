@@ -1,78 +1,16 @@
-using System.Xml;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace SonicUnleashedFCOConv {
     public static class DDS {
-        public static int texCount = 0, charaCount = 0, spriteIndex = 0;
-        public static List<Structs.Texture> textures = new List<Structs.Texture>();
-        public static List<Structs.Character> characters = new List<Structs.Character>();
+        public static int texCount = XML.texCount, charaCount = XML.charaCount, spriteIndex = 0;
+        public static string outputFolder;
+        public static List<Structs.Texture> textures = XML.textures;
+        public static List<Structs.Character> characters = XML.characters;
 
-        public static void Process(string path) {
-            ReadXML(path);
+        public static void Process() {
+            outputFolder = Program.fileDir + "/sprites";
 
-            foreach(Structs.Texture texture in textures) {
-                Console.WriteLine("Please input the path of " + texture.TextureName + ".");
-
-                string ddsPath = Console.ReadLine();
-                string ddsname = Path.GetFileNameWithoutExtension(ddsPath);
-
-                if (ddsPath != null && ddsname != null) {
-                    int index = textures.FindIndex(0, texCount, texture => texture.TextureName == ddsname);
-                    ReadDDS(ddsPath, index);
-                }
-            }
-
-            return;
-        }
-
-        public static void ReadXML(string path) {
-            string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
-
-            XmlDocument xDoc = new XmlDocument();
-            xDoc.Load(filePath + ".xml");
-            Common.RemoveComments(xDoc);
-            XmlElement? xRoot = xDoc.DocumentElement;
-
-            if (xRoot != null && xRoot.Name == "FTE") {
-                foreach (XmlElement node in xRoot) {
-                    if (node.Name == "Textures") { 
-                        foreach (XmlElement textureNode in node.ChildNodes) {
-                            Structs.Texture texture = new Structs.Texture() {
-                                TextureName = textureNode.Attributes.GetNamedItem("Name")!.Value!,
-                                TextureSizeX = int.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
-                                TextureSizeY = int.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!),
-                            };
-
-                            textures.Add(texture);
-                            texCount++;
-                        }
-                    }
-
-                    if (node.Name == "Characters") {
-                        foreach (XmlElement charaNode in node.ChildNodes) {
-                            Structs.Character character = new Structs.Character() {
-                                TextureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
-                                CharID = charaNode.Attributes.GetNamedItem("ConverseID")!.Value!,
-                                CharPoint1X = int.Parse(charaNode.Attributes.GetNamedItem("Point1_X")!.Value!),
-                                CharPoint1Y = int.Parse(charaNode.Attributes.GetNamedItem("Point1_Y")!.Value!),
-                                CharPoint2X = int.Parse(charaNode.Attributes.GetNamedItem("Point2_X")!.Value!),
-                                CharPoint2Y = int.Parse(charaNode.Attributes.GetNamedItem("Point2_Y")!.Value!),
-                            };
-
-                            characters.Add(character);
-                            charaCount++;
-                        }
-                    }
-                }
-            }
-
-            Console.WriteLine("XML read!");
-            return;
-        }
-
-        public static void ReadDDS(string filePath, int extTexIndex) {
-            string outputFolder = Program.fileDir + "/sprites";
             if (Directory.Exists(outputFolder) == false) {
                 Directory.CreateDirectory(outputFolder);
             }
@@ -82,6 +20,18 @@ namespace SonicUnleashedFCOConv {
                 }
             }
 
+            foreach(Structs.Texture texture in textures) {
+                Console.WriteLine("Please input the path of " + texture.TextureName + ".");
+                string ddsPath = Console.ReadLine().Replace("\"", "");
+
+                if (ddsPath != null && Path.GetFileNameWithoutExtension(ddsPath) != null) {
+                    int index = textures.FindIndex(0, texCount, texture => texture.TextureName == Path.GetFileNameWithoutExtension(ddsPath));
+                    ReadDDS(ddsPath, index);
+                }
+            }
+        }
+
+        public static void ReadDDS(string filePath, int extTexIndex) {
             Bitmap sourceImage = new Bitmap(filePath);
             
             foreach (var chara in characters) {

@@ -1,12 +1,13 @@
 ﻿namespace SonicUnleashedFCOConv {
     class Program {
-        public static string fileDir, fileName;
+        public static string fileDir, fileName, currentDir;
         static void Main(string[] args) {
             if(args.Length == 0) {
-                Console.WriteLine("SonicUnleashedFCOConv v1.0\nUsage: SonicUnleashedFCOConv <Path to .fte/.fco/.xml file>");
+                Console.WriteLine("SonicUnleashedFCOConv v1.0\nUsage: SonicUnleashedFCOConv <Path to .fte/.fco/.xml>");
                 return;
             }
             else {
+                currentDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 fileDir = Path.GetDirectoryName(args[0]);
                 fileName = Path.GetFileName(args[0]);
                 string file = fileDir + "\\" + fileName;
@@ -23,7 +24,13 @@
                     }
                     if (file.EndsWith(".xml")) {
                         XML.ReadXML(args[0]);
-                        //if (Common.ErrorCheck() == false) XML.WriteFCO(args[0]); //REMOVE BCZ FUNCTION HAS BEEN MOVED TO "XML.cs"
+                        if (XML.FTE) {
+                            if (Common.ErrorCheck()  == false) XML.WriteFTE(args[0]);
+                            Common.ExtractCheck();
+                        }
+                        if (XML.FCO) {
+                            if (Common.ErrorCheck()  == false) XML.WriteFCO(args[0]);
+                        }
                     }
                 }
                 else {
@@ -31,8 +38,8 @@
                 }
             }
 
-            Console.WriteLine("\nPress Enter to Exit.");
-            Console.Read();
+            //Console.WriteLine("\nPress Enter to Exit.");
+            //Console.Read();
         }
     }
 }

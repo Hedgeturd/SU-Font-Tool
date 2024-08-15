@@ -25,7 +25,7 @@ namespace SonicUnleashedFCOConv {
                 }
             }
             if (mode == 2) {
-                if (Common.noLetter == true) {
+                if (Common.noLetter) {
                     return;
                 }
                 
@@ -34,7 +34,7 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static bool ErrorCheck() {
-            if (Common.noLetter == true) {
+            if (Common.noLetter) {
                 TempCheck(1);
                 StreamWriter sw = new StreamWriter("temp.txt", append: true);
                 for (int i = 0; i < Translator.missinglist.Count; i++) {
@@ -52,12 +52,15 @@ namespace SonicUnleashedFCOConv {
                 }
 
                 Console.WriteLine("Please check your temp file!");
-
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
                 return true;
             }
-            if (FCO.noFoot == true) {
+            if (FCO.noFoot) {
                 Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FCO.address).ToString("X")  + ".");
                 Console.WriteLine("There is a structural abnormality within the FCO file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
                 return true;
             }
 
@@ -66,15 +69,15 @@ namespace SonicUnleashedFCOConv {
 
         public static void ExtractCheck() {
             Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
-            string choice = Console.ReadLine();
-            if (choice == "Y" || choice == "y") {
-                //Console.WriteLine("Please input the path of your DDS Character Pool.");
-                //string ddsPath = Console.ReadLine();
-                DDS.Process(Program.fileDir + "\\" + Program.fileName);
-            }
-            else {
+            
+            if (Console.ReadLine().ToLower() != "y") {
                 return;
             }
+            
+            XML.ReadXML(Program.fileDir + "\\" + Program.fileName);
+            DDS.Process();
+            Console.WriteLine("\nPress Enter to Exit.");
+            Console.Read();
         }
         
         // FCO and FTE Functions
@@ -87,7 +90,7 @@ namespace SonicUnleashedFCOConv {
 
             string? tableSwitch = Console.ReadLine();
 
-            if (tableSwitch == "TEST") {
+            if (tableSwitch.ToLower() == "test") {
                 Console.WriteLine("\nWhat is the name of the table you want to test?");
                 tableSwitch = Console.ReadLine();
                 fcoTable = "tables/" + tableSwitch + ".json";
@@ -160,8 +163,8 @@ namespace SonicUnleashedFCOConv {
                         Environment.Exit(0);
                         return;
                 }
-
-                fcoTable = "tables/" + tableLang + "/" + tableName + " " + tableType + ".json";
+                
+                fcoTable = Program.currentDir + "/tables/" + tableLang + "/" + tableName + " " + tableType + ".json";
             }
         }
 

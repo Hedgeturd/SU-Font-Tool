@@ -12,7 +12,7 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static string TXTtoHEX(String hex) {
-            List<string> chunks = SplitStringIntoChunks("TXTtoHEX",hex, 1);
+            List<string> chunks = SplitStringIntoChunks("TXTtoHEX", hex, 1);
             return JoinChunks(chunks);
         }
 
@@ -87,7 +87,7 @@ namespace SonicUnleashedFCOConv {
                 string searchResult = SearchHexStringForLetter(doc.RootElement, hexString);
 
                 if (searchResult == "?MISSING?") {
-                    jsonFilePath = "tables/Icons.json";
+                    jsonFilePath = Program.currentDir + "/tables/Icons.json";
                     using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
                     searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
                     jsonFilePath = Common.fcoTable;
@@ -95,7 +95,6 @@ namespace SonicUnleashedFCOConv {
                     if (searchResult == "?MISSING?") {
                         Common.noLetter = true;
                         missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
-                        return null;
                     }
 
                     return searchResult;
@@ -104,7 +103,6 @@ namespace SonicUnleashedFCOConv {
                     if (searchResult == "?MISSING") {
                         Common.noLetter = true;
                         missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
-                        return null;
                     }
 
                     return searchResult;
@@ -115,7 +113,7 @@ namespace SonicUnleashedFCOConv {
                     string searchResult = SearchLetterForHexString(doc.RootElement, hexString);
                     
                     if (searchResult == null) {
-                        jsonFilePath = "tables/Icons.json";
+                        jsonFilePath = Program.currentDir + "/tables/Icons.json";
                         using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
                         searchResult = SearchLetterForHexString(docIcon.RootElement, hexString);
                         jsonFilePath = Common.fcoTable;
@@ -123,7 +121,6 @@ namespace SonicUnleashedFCOConv {
                         if (searchResult == null) {
                             Common.noLetter = true;
                             missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
-                            return null;
                         }
 
                         return searchResult;
@@ -137,7 +134,6 @@ namespace SonicUnleashedFCOConv {
                     if (searchResult == null) {
                         Common.noLetter = true;
                         missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
-                        return null;
                     }
 
                     return searchResult;
@@ -153,16 +149,13 @@ namespace SonicUnleashedFCOConv {
                     if (item.TryGetProperty("hexString", out JsonElement hexStringElement) && hexStringElement.GetString().Equals(searchHexString)) {
                         if (item.TryGetProperty("letter", out JsonElement letterElement)) {
                             string? letter = letterElement.GetString();
-                            switch (letter) {
+                            /* switch (letter) {
                                 case "newline":
-                                    letter = "\n";
-                                    break;
-                                case "quote":
-                                    letter = "\"";
+                                    letter = "{NewLine}";
                                     break;
                                 default:
                                     break;
-                            }
+                            } */
 
                             return letter;
                         }
@@ -185,18 +178,13 @@ namespace SonicUnleashedFCOConv {
 
         static string SearchLetterForHexString(JsonElement element, string searchLetter)
         {
-            if (searchLetter == "\n") {
+            /* if (searchLetter == "\n") {
                 searchLetter = "newline";
-            }
-            if (searchLetter == "\"") {
-                searchLetter = "quote";
-            }
+            }*/
             if (element.ValueKind == JsonValueKind.Array) {
                 foreach (JsonElement item in element.EnumerateArray()) {
                     if (item.TryGetProperty("letter", out JsonElement letterElement) && letterElement.GetString().Equals(searchLetter)) {
                         if (item.TryGetProperty("hexString", out JsonElement hexStringElement)) {
-                            /* string hexString = hexStringElement.GetString(); */
-                            //Console.WriteLine($"letter: {searchLetter}, hexString: {hexString}");
                             return hexStringElement.GetString();
                         }
                     }

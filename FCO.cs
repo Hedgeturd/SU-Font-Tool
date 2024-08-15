@@ -235,7 +235,7 @@ namespace SonicUnleashedFCOConv {
                         break;
                     }
 
-                    if (Common.skipFlag == true) {
+                    if (Common.skipFlag) {
                         int highlightcount = 0;
                         foreach (Structs.Highlight highlight in cell.HighlightList) {
                             writer.WriteStartElement("Highlight" + highlightcount);

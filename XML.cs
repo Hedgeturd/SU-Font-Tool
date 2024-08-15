@@ -3,8 +3,11 @@ using System.Text;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
-        public static bool returnEarly = false;
+        public static int texCount = 0, charaCount = 0, spriteIndex = 0;
+        public static bool returnEarly = false, FCO = false, FTE = false;
         public static List<Structs.Group> groups = new List<Structs.Group>();
+        public static List<Structs.Texture> textures = new List<Structs.Texture>();
+        public static List<Structs.Character> characters = new List<Structs.Character>();
         public static void ReadXML(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
 
@@ -14,7 +17,7 @@ namespace SonicUnleashedFCOConv {
             XmlElement? xRoot = xDoc.DocumentElement;
 
             if (xRoot != null && xRoot.Name == "FCO") {
-                Common.fcoTable = "tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
+                Common.fcoTable = Program.currentDir + "/tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
                 Translator.jsonFilePath = Common.fcoTable;
 
                 foreach (XmlElement node in xRoot) {
@@ -125,15 +128,44 @@ namespace SonicUnleashedFCOConv {
                 }
 
                 Console.WriteLine("XML read!");
-                if (Common.ErrorCheck()  == false) WriteFCO(filePath);
+                FCO = true;
             }
 
             if (xRoot != null && xRoot.Name == "FTE") {
-                Console.WriteLine("Program recognised XML as FTE Format");
-                Common.ExtractCheck();
-            }
+                foreach (XmlElement node in xRoot) {
+                    if (node.Name == "Textures") { 
+                        foreach (XmlElement textureNode in node.ChildNodes) {
+                            Structs.Texture texture = new Structs.Texture() {
+                                TextureName = textureNode.Attributes.GetNamedItem("Name")!.Value!,
+                                TextureSizeX = int.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
+                                TextureSizeY = int.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!),
+                            };
 
-            return;
+                            textures.Add(texture);
+                            texCount++;
+                        }
+                    }
+
+                    if (node.Name == "Characters") {
+                        foreach (XmlElement charaNode in node.ChildNodes) {
+                            Structs.Character character = new Structs.Character() {
+                                TextureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
+                                CharID = charaNode.Attributes.GetNamedItem("ConverseID")!.Value!,
+                                CharPoint1X = int.Parse(charaNode.Attributes.GetNamedItem("Point1_X")!.Value!),
+                                CharPoint1Y = int.Parse(charaNode.Attributes.GetNamedItem("Point1_Y")!.Value!),
+                                CharPoint2X = int.Parse(charaNode.Attributes.GetNamedItem("Point2_X")!.Value!),
+                                CharPoint2Y = int.Parse(charaNode.Attributes.GetNamedItem("Point2_Y")!.Value!),
+                            };
+
+                            characters.Add(character);
+                            charaCount++;
+                        }
+                    }
+                }
+
+                Console.WriteLine("XML read!");
+                FTE = true;
+            }
         }
 
         public static void WriteFCO(string path) {
@@ -219,7 +251,7 @@ namespace SonicUnleashedFCOConv {
                             }
                         }
 
-                        if (Common.skipFlag == true) {
+                        if (Common.skipFlag) {
                             binaryWriter.Write(Common.EndianSwap(0x00000000));
                             //Console.WriteLine("Highlight Data Written!");
                             Common.skipFlag = false;
@@ -234,15 +266,43 @@ namespace SonicUnleashedFCOConv {
 
                 //Console.WriteLine("Group Data Written!");
             }
+
             binaryWriter.Close();
-
-            /* if (Common.noLetter == true) {
-                Console.WriteLine("Some letters in the XML are NOT in the current table and have been removed!");
-                Console.WriteLine("Please check your XML and the temp file!");
-            } */
-
             Console.WriteLine("FCO written!");
-            return;
+        }
+
+        public static void WriteFTE(string path) {
+            string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
+            File.Delete(Path.Combine(filePath + ".fte"));
+
+            Encoder UTF16 = Encoding.Unicode.GetEncoder();
+
+            BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fte", FileMode.OpenOrCreate));
+
+            // Writing Header
+            binaryWriter.Write(Common.EndianSwap(0x00000004));
+            binaryWriter.Write(0x00000000);
+
+            // Texture Count
+            binaryWriter.Write(Common.EndianSwap(textures.Count));
+            for (int t = 0; t < textures.Count; t++) {
+                binaryWriter.Write(Common.EndianSwap(textures[t].TextureName.Length));
+                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(textures[t].TextureName, '@'));
+                binaryWriter.Write(Common.EndianSwap(textures[t].TextureSizeX));
+                binaryWriter.Write(Common.EndianSwap(textures[t].TextureSizeY));
+            }
+
+            binaryWriter.Write(Common.EndianSwap(characters.Count));
+            for (int c = 0; c < characters.Count; c++) {
+                binaryWriter.Write(Common.EndianSwap(characters[c].TextureIndex));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint1X / textures[characters[c].TextureIndex].TextureSizeX));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint1Y / textures[characters[c].TextureIndex].TextureSizeY));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint2X / textures[characters[c].TextureIndex].TextureSizeX));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint2Y / textures[characters[c].TextureIndex].TextureSizeY));
+            }
+
+            binaryWriter.Close();
+            Console.WriteLine("FTE written!");
         }
     }
 }

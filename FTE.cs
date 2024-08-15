@@ -60,7 +60,6 @@ namespace SonicUnleashedFCOConv {
 			
             binaryReader.Close();
             Console.WriteLine("FTE Read!");
-            return;
         }
 
         public static void WriteXML(string path) {
@@ -105,7 +104,6 @@ namespace SonicUnleashedFCOConv {
             characters.Clear();
 
             Console.WriteLine("XML written!");
-            return;
         }
     }
 }
