@@ -47,7 +47,7 @@ namespace SonicUnleashedFCOConv {
                     IndexChange = true;
                 }
 
-                charaData.CharID = CurrentID.ToString("X8");
+                charaData.CharID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
 
                 charaData.CharPoint1X = textures[charaData.TextureIndex].TextureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
                 charaData.CharPoint1Y = textures[charaData.TextureIndex].TextureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());

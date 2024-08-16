@@ -69,13 +69,14 @@ namespace SonicUnleashedFCOConv {
 
         public static void ExtractCheck() {
             Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
-            
-            if (Console.ReadLine().ToLower() != "y") {
+            string choice = Console.ReadLine();
+            if (choice.ToLower() != "y") {
                 return;
             }
             
             XML.ReadXML(Program.fileDir + "\\" + Program.fileName);
             DDS.Process();
+            Table.WriteJSON();
             Console.WriteLine("\nPress Enter to Exit.");
             Console.Read();
         }
