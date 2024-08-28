@@ -9,7 +9,7 @@ You can also simply drag and drop supported file formats onto the executable.
 ### Font-Texture
 FTE file formats contain data which help assign texture sprites to character slots to be used by the FCO in game.<br><br>
 When converted to an XML you can view and edit the different fields to your liking.<br>
-(I'm yet to give a proper explanation to these fields)<br>
+(I'm yet to give a proper explanation to these fields)
 
 ### Font-Converse
 FCO file formats contain data such as text and cell properties to be used by the game when text needs to be called and displayed.<br><br>
@@ -18,7 +18,7 @@ When converted to an XML, you can view and edit the different fields such as:
 - Groups which holds Cells,
 - Cell Messages that contain text data,
 - Cell ColourMain that control the text colour,
-- Cell Highlights which allows for more than one text colour.<br>
+- Cell Highlights which allows for more than one text colour.
 
 ### XML
 Once happy with your changes, you can drag and drop your XML file onto the Program to create an FCO/FTE file
