@@ -16,7 +16,7 @@ When converted to an XML, you can view and edit the different fields such as:
 - Groups which holds Cells,
 - Cell Messages that contain text data,
 - Cell ColourMain that control the text colour,
-- Cell Highlight which allows for more than one text colour.
+- Cell Highlights which allows for more than one text colour.
 
 ## To Do
 - (Try) Add DDS Support
