@@ -14,7 +14,7 @@ When converted to an XML you can view and edit the different fields to your liki
 ### Font-Converse
 FCO file formats contain data such as text and cell properties to be used by the game when text needs to be called and displayed.<br>
 When converted to an XML, you can view and edit the different fields such as:
-- Tables which define the translation table being used,
+- Table which define the translation table being used,
 - Groups which holds Cells,
 - Cell Messages that contain text data,
 - Cell ColourMain that control the text colour,
