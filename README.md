@@ -21,7 +21,7 @@ When converted to an XML, you can view and edit the different fields such as:
 - Cell Highlights which allows for more than one text colour.
 
 ### XML
-Once happy with your changes, you can drag and drop your XML file onto the Program to create an FCO/FTE file
+Once happy with your changes, you can drag and drop your XML file onto the Program to turn it back into an FTE/FCO file
 
 ## To Do
 - (Try) Add DDS Support
