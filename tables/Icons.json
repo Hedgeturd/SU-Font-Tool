@@ -1,0 +1,96 @@
+{
+    "ConversionTable": [
+        {
+            "letter": "{A}",
+            "hexString": "00 00 00 64"
+        },
+        {
+            "letter": "{B}",
+            "hexString": "00 00 00 65"
+        },
+        {
+            "letter": "{X}",
+            "hexString": "00 00 00 66"
+        },
+        {
+            "letter": "{Y}",
+            "hexString": "00 00 00 67"
+        },
+        {
+            "letter": "{LB}",
+            "hexString": "00 00 00 68"
+        },
+        {
+            "letter": "{RB}",
+            "hexString": "00 00 00 69"
+        },
+        {
+            "letter": "{LT}",
+            "hexString": "00 00 00 6A"
+        },
+        {
+            "letter": "{RT}",
+            "hexString": "00 00 00 6B"
+        },
+        {
+            "letter": "{LSU}",
+            "hexString": "00 00 00 6C"
+        },
+        {
+            "letter": "{LSR}",
+            "hexString": "00 00 00 6D"
+        },
+        {
+            "letter": "{LSD}",
+            "hexString": "00 00 00 6E"
+        },
+        {
+            "letter": "{LSL}",
+            "hexString": "00 00 00 6F"
+        },
+        {
+            "letter": "{RSU}",
+            "hexString": "00 00 00 70"
+        },
+        {
+            "letter": "{RSR}",
+            "hexString": "00 00 00 71"
+        },
+        {
+            "letter": "{RSD}",
+            "hexString": "00 00 00 72"
+        },
+        {
+            "letter": "{RSL}",
+            "hexString": "00 00 00 73"
+        },
+        {
+            "letter": "{UP}",
+            "hexString": "00 00 00 74"
+        },
+        {
+            "letter": "{RIGHT}",
+            "hexString": "00 00 00 75"
+        },
+        {
+            "letter": "{DOWN}",
+            "hexString": "00 00 00 76"
+        },
+        {
+            "letter": "{LEFT}",
+            "hexString": "00 00 00 77"
+        },
+        {
+            "letter": "{START}",
+            "hexString": "00 00 00 78"
+        },
+        {
+            "letter": "{SELECT}",
+            "hexString": "00 00 00 79"
+        },
+        {
+            "letter": "{AUTOSAVE}",
+            "hexString": "00 00 00 7A"
+        }
+    ]
+}
