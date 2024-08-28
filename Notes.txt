@@ -1,0 +1,6 @@
+Converter Notes
+
+Make a JSON Table template creator                      - includes extracted values in a table to fill the blanks into
+Add better padding reader system with modulo (%)
+
+Optimise existing code before implementing GUI in VS

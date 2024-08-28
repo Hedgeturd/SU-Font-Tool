@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SonicUnleashedFCOConv {
     public static class FCO {
-        public static bool noFoot = false;
+        public static bool structureError = false;
         public static long address;
         public static List<Structs.Group> groups = new List<Structs.Group>();
         public static List<string> highlightlocal = new List<string>();
@@ -20,7 +20,12 @@ namespace SonicUnleashedFCOConv {
             Encoding Unicode = Encoding.GetEncoding("Unicode");
             Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");
 
-            binaryReader.ReadInt64();   // This is always the same
+            long fileHeader = binaryReader.ReadInt64();   // This is always the same
+            if (fileHeader != 67108864) {
+                structureError = true;
+                address = binaryReader.BaseStream.Position;
+                return;
+            }
 
             // Groups
             int groupCount = Common.EndianSwap(binaryReader.ReadInt32());
@@ -50,7 +55,12 @@ namespace SonicUnleashedFCOConv {
                     byte[] cellMessageBytes = binaryReader.ReadBytes(cellLength * 4);
                     cellData.CellMessage = Translator.HEXtoTXT(BitConverter.ToString(cellMessageBytes).Replace("-", " "));
 
-                    binaryReader.ReadInt32();
+                    int colourHeader = Common.EndianSwap(binaryReader.ReadInt32());
+                    if (colourHeader != 4) {
+                        structureError = true;
+                        address = binaryReader.BaseStream.Position;
+                        return;
+                    }
 
                     //Colour Data
                     List<Structs.ColourMain> ColourMain = new List<Structs.ColourMain>();
@@ -113,7 +123,7 @@ namespace SonicUnleashedFCOConv {
                         skipData.skip1 = binaryReader.ReadInt32();
                     }
                     catch (EndOfStreamException) {
-                        noFoot = true;
+                        structureError = true;
                         address = binaryReader.BaseStream.Position;
                         return;
                     }

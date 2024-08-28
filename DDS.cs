@@ -20,8 +20,11 @@ namespace SonicUnleashedFCOConv {
                 }
             }
 
+            Console.WriteLine("WARNING: This feature is still Experimental!");
+            Console.WriteLine("Provide the following files as PNG images");
+
             foreach(Structs.Texture texture in textures) {
-                Console.WriteLine("Please input the path of " + texture.TextureName + ".");
+                Console.WriteLine("Please provide the path of " + texture.TextureName + ".");
                 string ddsPath = Console.ReadLine().Replace("\"", "");
 
                 if (ddsPath != null && Path.GetFileNameWithoutExtension(ddsPath) != null) {

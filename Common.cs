@@ -56,9 +56,16 @@ namespace SonicUnleashedFCOConv {
                 Console.Read();
                 return true;
             }
-            if (FCO.noFoot) {
+            if (FCO.structureError) {
                 Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FCO.address).ToString("X")  + ".");
                 Console.WriteLine("There is a structural abnormality within the FCO file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
+                return true;
+            }
+            if (FTE.structureError) {
+                Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FTE.address).ToString("X")  + ".");
+                Console.WriteLine("There is a structural abnormality within the FTE file!");
                 Console.WriteLine("\nPress Enter to Exit.");
                 Console.Read();
                 return true;
@@ -74,7 +81,10 @@ namespace SonicUnleashedFCOConv {
                 return;
             }
             
-            XML.ReadXML(Program.fileDir + "\\" + Program.fileName);
+            if (XML.FTE != true) {
+                XML.ReadXML(Program.fileDir + "\\" + Program.fileName);
+            }
+
             DDS.Process();
             Table.WriteJSON();
             Console.WriteLine("\nPress Enter to Exit.");

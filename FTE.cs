@@ -3,6 +3,8 @@ using System.Text;
 
 namespace SonicUnleashedFCOConv {
     public static class FTE {
+        public static bool structureError = false;
+        public static long address;
         public static List<Structs.Texture> textures = new List<Structs.Texture>();
         public static List<Structs.Character> characters = new List<Structs.Character>();
         
@@ -13,7 +15,12 @@ namespace SonicUnleashedFCOConv {
             Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");
 
             // Starting 8 Bytes
-            binaryReader.ReadInt64();
+            long header = binaryReader.ReadInt64();   // This is always the same
+            if (header != 67108864) {
+                structureError = true;
+                address = binaryReader.BaseStream.Position;
+                return;
+            }
 
             // Textures
             int textureCount = Common.EndianSwap(binaryReader.ReadInt32());
