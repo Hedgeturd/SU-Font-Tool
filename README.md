@@ -6,11 +6,11 @@ A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files int
 You can also simply drag and drop supported file formats onto the executable.
 
 ## Font-Texture
-FTE file formats contain data which help assign texture sprites to character slots to be used by the FCO in game.
+FTE file formats contain data which help assign texture sprites to character slots to be used by the FCO in game.<br>
 When converted to an XML you can view and edit the different fields to your liking.
 
 ### Font-Converse
-FCO file formats contain data such as text and cell properties to be used by the game when text needs to be called and displayed.
+FCO file formats contain data such as text and cell properties to be used by the game when text needs to be called and displayed.<br>
 When converted to an XML, you can view and edit the different fields such as:
 - FCO Tables which define the translation table being used,
 - Groups which holds lots of Cells,
