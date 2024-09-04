@@ -1,6 +1,9 @@
 # Sonic Unleashed Font Tool
 A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files into XML files and vice versa.
 
+# Warning
+The new JSON files are yet to be tested properly, expect a small few to be incorrect.
+
 ## Usage
 ```SonicUnleashedFCOConv <Path to .fte/.fco/.xml>```<br>
 You can also simply drag and drop supported file formats onto the executable.
@@ -24,7 +27,7 @@ When converted to an XML, you can view and edit the different fields such as:
 Once happy with your changes, you can drag and drop your XML file onto the Program to turn it back into an FTE/FCO file
 
 ## To Do
-- Update translation jsons for new system
+- Update translation JSONs for new system
 - (Try) Add DDS Support
 
 ## Thanks
