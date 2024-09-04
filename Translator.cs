@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace SonicUnleashedFCOConv {
     class Translator {
         // To whomever this may concern, I legit don't even know how I wrote some of this.. It may have been a 2AM job...
-        public static string? jsonFilePath = Common.fcoTable;
+        public static string? iconsTablePath;
         public static List<string> missinglist = new List<string>();
 
         public static string HEXtoTXT(String hex) {
@@ -75,26 +75,24 @@ namespace SonicUnleashedFCOConv {
             // Read the JSON file
             // Parse the JSON string into a JsonDocument
 
-            if (File.Exists(jsonFilePath) == false) {
+            if (File.Exists(Common.fcoTable) == false) {
                 Console.WriteLine("\nThis table does not exist\nPlease check your files!\nPress any key to exit.");
                 Console.ReadKey();
                 Environment.Exit(0);
             }
 
-            using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
+            using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(Common.fcoTable));
 
             if (searchMode == "HEXtoTXT") {
                 string searchResult = SearchHexStringForLetter(doc.RootElement, hexString);
 
                 if (searchResult == "?MISSING?") {
-                    jsonFilePath = Program.currentDir + "/tables/Icons.json";
-                    using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
+                    using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(iconsTablePath));
                     searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
-                    jsonFilePath = Common.fcoTable;
 
                     if (searchResult == "?MISSING?") {
                         Common.noLetter = true;
-                        missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
+                        missinglist.Add("HexString: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                     }
 
                     return searchResult;
@@ -102,7 +100,7 @@ namespace SonicUnleashedFCOConv {
                 else {
                     if (searchResult == "?MISSING") {
                         Common.noLetter = true;
-                        missinglist.Add("hexString: " + hexString + " not found in the table " + Common.tableName + "!");
+                        missinglist.Add("HexString: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                     }
 
                     return searchResult;
@@ -113,14 +111,12 @@ namespace SonicUnleashedFCOConv {
                     string searchResult = SearchLetterForHexString(doc.RootElement, hexString);
                     
                     if (searchResult == null) {
-                        jsonFilePath = Program.currentDir + "/tables/Icons.json";
-                        using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(jsonFilePath));
+                        using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(iconsTablePath));
                         searchResult = SearchLetterForHexString(docIcon.RootElement, hexString);
-                        jsonFilePath = Common.fcoTable;
 
                         if (searchResult == null) {
                             Common.noLetter = true;
-                            missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
+                            missinglist.Add("Letter: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                         }
 
                         return searchResult;
@@ -133,7 +129,7 @@ namespace SonicUnleashedFCOConv {
 
                     if (searchResult == null) {
                         Common.noLetter = true;
-                        missinglist.Add("letter: " + hexString + " not found in the table " + Common.tableName + "!");
+                        missinglist.Add("Letter: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                     }
 
                     return searchResult;
@@ -146,17 +142,9 @@ namespace SonicUnleashedFCOConv {
         static string SearchHexStringForLetter(JsonElement element, string searchHexString) {
             if (element.ValueKind == JsonValueKind.Array) {
                 foreach (JsonElement item in element.EnumerateArray()) {
-                    if (item.TryGetProperty("hexString", out JsonElement hexStringElement) && hexStringElement.GetString().Equals(searchHexString)) {
-                        if (item.TryGetProperty("letter", out JsonElement letterElement)) {
+                    if (item.TryGetProperty("HexString", out JsonElement hexStringElement) && hexStringElement.GetString().Equals(searchHexString)) {
+                        if (item.TryGetProperty("Letter", out JsonElement letterElement)) {
                             string? letter = letterElement.GetString();
-                            /* switch (letter) {
-                                case "newline":
-                                    letter = "{NewLine}";
-                                    break;
-                                default:
-                                    break;
-                            } */
-
                             return letter;
                         }
                     }
@@ -178,13 +166,10 @@ namespace SonicUnleashedFCOConv {
 
         static string SearchLetterForHexString(JsonElement element, string searchLetter)
         {
-            /* if (searchLetter == "\n") {
-                searchLetter = "newline";
-            }*/
             if (element.ValueKind == JsonValueKind.Array) {
                 foreach (JsonElement item in element.EnumerateArray()) {
-                    if (item.TryGetProperty("letter", out JsonElement letterElement) && letterElement.GetString().Equals(searchLetter)) {
-                        if (item.TryGetProperty("hexString", out JsonElement hexStringElement)) {
+                    if (item.TryGetProperty("Letter", out JsonElement letterElement) && letterElement.GetString().Equals(searchLetter)) {
+                        if (item.TryGetProperty("HexString", out JsonElement hexStringElement)) {
                             return hexStringElement.GetString();
                         }
                     }

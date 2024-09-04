@@ -50,7 +50,7 @@ namespace SonicUnleashedFCOConv {
                 charaData.TextureIndex = Common.EndianSwap(binaryReader.ReadInt32());
 
                 if (charaData.TextureIndex == 2 && IndexChange == false) {
-                    CurrentID = 246;
+                    CurrentID += 100;
                     IndexChange = true;
                 }
 

@@ -18,7 +18,7 @@ namespace SonicUnleashedFCOConv {
 
             if (xRoot != null && xRoot.Name == "FCO") {
                 Common.fcoTable = Program.currentDir + "/tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
-                Translator.jsonFilePath = Common.fcoTable;
+                Translator.iconsTablePath = "tables/Icons.json";
 
                 foreach (XmlElement node in xRoot) {
                     if (node.Name == "Groups") {

@@ -10,7 +10,6 @@ namespace SonicUnleashedFCOConv {
         public static void ReadFCO(string path) {
             Common.TableAssignment();
             if (Common.fcoTable == null) return;
-            Common.fcoTable = Translator.jsonFilePath;
 
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
@@ -180,7 +179,7 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FCO");
-            writer.WriteAttributeString("Table", Common.tableLang + "/" + Common.tableName + " " + Common.tableType);
+            writer.WriteAttributeString("Table", Common.fcoTableName);
 
             // Categories
             writer.WriteStartElement("Groups");

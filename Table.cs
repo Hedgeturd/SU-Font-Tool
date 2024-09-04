@@ -15,8 +15,15 @@ namespace SonicUnleashedFCOConv {
 
             List<ConversionEntry> conversionTable = new List<ConversionEntry>();
 
+            string userInput;
+
             foreach (Structs.Character character in characters) {
-                conversionTable.Add(new ConversionEntry { Letter = "{FILL}", HexString = character.CharID });
+                Console.WriteLine(character.CharID + ": ");
+                userInput = Console.ReadLine();
+                if (userInput == null) {
+                    userInput = "{FILL}";
+                }
+                conversionTable.Add(new ConversionEntry { Letter = userInput, HexString = character.CharID });
             }
 
             // Convert the list to JSON and write to a file
