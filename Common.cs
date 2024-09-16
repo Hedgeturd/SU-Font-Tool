@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace SonicUnleashedFCOConv {
     class Common {
-        public static string? fcoTable, fcoTableDir, fcoTableName; //, tableType, tableLang;
+        public static string? fcoTable, fcoTableDir, fcoTableName;
         public static bool skipFlag = false, noLetter = false;
 
         // Common Functions
@@ -90,155 +90,59 @@ namespace SonicUnleashedFCOConv {
             Console.WriteLine("\nPress Enter to Exit.");
             Console.Read();
         }
+
+        static void IndexCheck(string userInput, int length) {
+            int userInt = Convert.ToInt32(userInput);
+            if (userInt < 1 || userInt > length) {
+                Console.WriteLine("\nThis is not a valid selection!\nPress any key to exit.");
+                Console.Read();
+                Environment.Exit(0);
+                return;
+            }
+        }
         
         // FCO and FTE Functions
-        public static void TableAssignment() {
+        public static void TableAssignment() {      // This block of code is probably the worst thing I have ever made :)
             fcoTableDir = Program.currentDir + "/tables/";
             Console.WriteLine("Please Input the number corresponding to the original location of your FCO file:");
             Console.WriteLine("\n1: Languages\n2: Subtitle");
+
+            string[] language = {"English/", "French/", "German/", "Italian/", "Japanese/", "Spanish/"};
+            string[] version = {"Retail/", "DLC/", "Preview/"};
+
             string? userInput = Console.ReadLine();
 
             if (userInput.ToLower() == "test") {
                 Console.WriteLine("\nWhat is the name of the table you want to test?");
                 userInput = Console.ReadLine();
                 fcoTableName = fcoTableDir + userInput + ".json";
+                return;
             }
             if (userInput == "1") {
                 fcoTableName = "Languages/";
                 Translator.iconsTablePath = fcoTableDir + "Icons.json";
-
-                Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
-                Console.WriteLine("\n1: English\n2: French\n3: German\n4: Italian\n5: Japanese\n6: Spanish\n");
-                userInput = Console.ReadLine();
-                switch (userInput) {
-                    case "1":
-                        fcoTableName += "English/";
-                        break;
-                    case "2":
-                        fcoTableName += "French/";
-                        break;
-                    case "3":
-                        fcoTableName += "German/";
-                        break;
-                    case "4":
-                        fcoTableName += "Italian/";
-                        break;
-                    case "5":
-                        fcoTableName += "Japanese/";
-                        break;
-                    case "6":
-                        fcoTableName += "Spanish/";
-                        break;
-                    default:
-                        Console.WriteLine("\nThis is not a valid language selection!\nPress any key to exit.");
-                        Console.Read();
-                        Environment.Exit(0);
-                        return;
-                }
-
-                Console.WriteLine("\nPlease Input the number corresponding to the original version of your FCO file:");
-                Console.WriteLine("\n1: Retail\n2: DLC\n3: Preview\n");
-                userInput = Console.ReadLine();
-                switch (userInput) {
-                    case "1":
-                        fcoTableName += "Retail/";
-                        break;
-                    case "2":
-                        fcoTableName += "DLC/";
-                        break;
-                    case "3":
-                        fcoTableName += "Preview/";
-                        break;
-                    default:
-                        Console.WriteLine("\nThis is not a valid type selection!\nPress any key to exit.");
-                        Console.Read();
-                        Environment.Exit(0);
-                        return;
-                }
-
-                /* Console.WriteLine("\n1: Menu\nInstall\nTown_[Country]_Common\nTown_[CountryLabo]_Common\nWorldMap");
-                Console.WriteLine("\n2: In-Stage\nEvilActionCommon\nSonicActionCommon");
-                Console.WriteLine("\n3: Tornado\nExStageTails_Common\n");
-                userInput = Console.ReadLine();
-                switch (userInput) {
-                case "1":
-                    fcoTableName += "Common ";
-                    break;
-                case "2":
-                    fcoTableName += "In-Stage ";
-                    break;
-                case "3":
-                    fcoTableName += "Tornado ";
-                    break;
-                default:
-                    Console.WriteLine("\nThis is not a valid table selection!\nPress any key to exit.");
-                    Console.Read();
-                    Environment.Exit(0);
-                    return;
-                } */
-
-                Console.WriteLine("\nWhat is the name of the archive the FCO originated from?");
-                fcoTableName += userInput = Console.ReadLine();
-
-                Console.WriteLine(fcoTable + "\n" + Translator.iconsTablePath);
-                fcoTable = fcoTableDir + fcoTableName + ".json";
             }
             if (userInput == "2") {
                 fcoTableName = "Subtitle/";
-
-                Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
-                Console.WriteLine("\n1: English\n2: French\n3: German\n4: Italian\n5: Japanese\n6: Spanish\n");
-                userInput = Console.ReadLine();
-                switch (userInput) {
-                    case "1":
-                        fcoTableName += "English/";
-                        break;
-                    case "2":
-                        fcoTableName += "French/";
-                        break;
-                    case "3":
-                        fcoTableName += "German/";
-                        break;
-                    case "4":
-                        fcoTableName += "Italian/";
-                        break;
-                    case "5":
-                        fcoTableName += "Japanese/";
-                        break;
-                    case "6":
-                        fcoTableName += "Spanish/";
-                        break;
-                    default:
-                        Console.WriteLine("\nThis is not a valid language selection!\nPress any key to exit.");
-                        Console.Read();
-                        Environment.Exit(0);
-                        return;
-                }
-
-                Console.WriteLine("\nPlease Input the number corresponding to the original version of your FCO file:");
-                Console.WriteLine("\n1: Retail\n2: DLC\n3: Preview\n");
-                userInput = Console.ReadLine();
-                switch (userInput) {
-                    case "1":
-                        fcoTableName += "Retail/";
-                        break;
-                    case "2":
-                        fcoTableName += "DLC/";
-                        break;
-                    case "3":
-                        fcoTableName += "Preview/";
-                        break;
-                    default:
-                        Console.WriteLine("\nThis is not a valid type selection!\nPress any key to exit.");
-                        Console.Read();
-                        Environment.Exit(0);
-                        return;
-                }
-
-                Console.WriteLine("\nWhat is the name of the archive the FCO originated from?");
-                userInput = Console.ReadLine();
-                fcoTable = fcoTableDir + fcoTableName + userInput + ".json";
             }
+
+            Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
+            Console.WriteLine("\n1: English\n2: French\n3: German\n4: Italian\n5: Japanese\n6: Spanish\n");
+            userInput = Console.ReadLine();
+            IndexCheck(userInput, language.Length);
+            fcoTableName += language[Convert.ToInt32(userInput) - 1];
+
+            Console.WriteLine("\nPlease Input the number corresponding to the original version of your FCO file:");
+            Console.WriteLine("\n1: Retail\n2: DLC\n3: Preview\n");
+            userInput = Console.ReadLine();
+            IndexCheck(userInput, version.Length);
+            fcoTableName += version[Convert.ToInt32(userInput) - 1];
+
+            Console.WriteLine("\nWhat is the name of the archive the FCO originated from?");
+            fcoTableName += userInput = Console.ReadLine();
+
+            fcoTable = fcoTableDir + fcoTableName + ".json";
+            Console.WriteLine(fcoTable + "\n" + Translator.iconsTablePath);
         }
 
         public static int EndianSwap(int a) {
