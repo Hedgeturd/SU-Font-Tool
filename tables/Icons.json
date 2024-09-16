@@ -91,6 +91,14 @@
         {
             "Letter": "{AUTOSAVE}",
             "HexString": "00 00 00 7A"
+        },
+		{
+            "Letter": "{ValueP1}",
+            "HexString": "00 00 00 01"
+        },
+		{
+            "Letter": "{ValueP2}",
+            "HexString": "00 00 00 2E"
         }
     ]
 }
