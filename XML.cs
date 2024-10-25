@@ -3,6 +3,7 @@ using System.Text;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
+        public static string tableNoName;
         public static int texCount = 0, charaCount = 0, spriteIndex = 0;
         public static bool returnEarly = false, FCO = false, FTE = false;
         public static List<Structs.Group> groups = new List<Structs.Group>();
@@ -17,7 +18,8 @@ namespace SonicUnleashedFCOConv {
             XmlElement? xRoot = xDoc.DocumentElement;
 
             if (xRoot != null && xRoot.Name == "FCO") {
-                Common.fcoTable = Program.currentDir + "/tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!) + ".json";
+                tableNoName = Program.currentDir + "/tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!);
+                Common.fcoTable = tableNoName + ".json";
                 Translator.iconsTablePath = "tables/Icons.json";
 
                 foreach (XmlElement node in xRoot) {
@@ -36,14 +38,12 @@ namespace SonicUnleashedFCOConv {
                                         if (messageNode.Name == "Message") {
                                             cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
                                             string hexString = Translator.TXTtoHEX(cell.CellMessage);
-
                                             hexString = hexString.Replace(" ", "");
+
                                             byte[] messageByteArray = Common.StringToByteArray(hexString);
                                             messageByteArray = Common.StringToByteArray(hexString);
-
-                                            int numberOfBytes = hexString.Length;
-                                            cell.MessageCharAmount = numberOfBytes / 8;
-
+                                            //int numberOfBytes = hexString.Length;
+                                            cell.MessageCharAmount = hexString.Length / 8;
                                             cell.CellMessageWrite = messageByteArray;
                                         }
                                     }

@@ -1,17 +1,119 @@
+using System.Text;
 using System.Text.Json;
 
 namespace SonicUnleashedFCOConv {
     class Translator {
         // To whomever this may concern, I legit don't even know how I wrote some of this.. It may have been a 2AM job...
-        public static string? iconsTablePath;
+        static int thing1;
+        static bool iconCheck = false, fontCheck = false, fontSizeFound = false;
+        public static string? iconsTablePath, tempTablePath;
         public static List<string> missinglist = new List<string>();
+        public static string[] fontarray = {"_Small.json", "_Large.json", "_Extra.json"};
+        public enum FontSizes {S = 0, L = 1, X = 2}
 
-        public static string HEXtoTXT(String hex) {
+        public static string stringConv(string tagstr, string fontsize) {
+            tempTablePath = Common.fcoTable;
+            Common.fcoTable = XML.tableNoName + fontsize;
+            string hexString = Translator.TXTtoHEX(tagstr);
+            Common.fcoTable = tempTablePath;
+
+            return hexString;
+        }
+
+        public static void fontmerge(List<string> chunks) {
+            StringBuilder mergedContent = new StringBuilder();
+            bool fontsizer = false;
+            int chunkinx = 0, specialinx = 0, thing = 0;
+            string[] chunkre = new string[chunks.Count];
+            int[] startinx = new int[chunks.Count];
+            int[] endinx = new int[chunks.Count];
+
+            foreach (var chunk in chunks)
+            {
+                if (chunk.Length > 2 && chunk[2] == ':' && chunk.EndsWith("}")) {
+                    if (fontsizer == false) {
+                        specialinx = chunkinx;
+                        fontsizer = true;
+                    }
+                    mergedContent.Append(chunk.Substring(3, 1));
+                }
+
+                if (chunk.Length < 2 && fontsizer) {
+                    startinx[thing] = specialinx;
+                    endinx[thing] = chunkinx;
+                    chunkre[thing] = chunks[chunkinx - 1].Substring(1,1) + "," + mergedContent.ToString();
+                    mergedContent.Clear();
+                    fontsizer = false;
+                    Console.WriteLine(startinx[thing] + endinx[thing] + chunkre[thing]);
+                    thing++;
+                }
+
+                chunkinx++;
+            }
+
+            for (int i = 0; i < thing; i++) {
+                string rebuilt = chunkre[i];
+                string mergedString = "{" + chunkre[i].Substring(0,1) + ":" + rebuilt.Substring(2,rebuilt.Length - 2) + "}";
+
+                for (int p = startinx[i]; p < endinx[i]; p++) {
+                    chunks[p] = "{FILL}";
+                }
+
+                chunks[startinx[i]] = mergedString;
+            }
+
+            chunks.RemoveAll(EndsWithSaurus);
+        }
+
+        public static string tableSearchCheck(string hexString) {
+            string searchResult = "";
+            if (iconCheck == false) {
+                using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(iconsTablePath));
+                searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
+                iconCheck = true;
+            }
+            else {
+                for (int i = 0; i < 3; i++) {
+                    if (File.Exists(Common.fcoTableDir + Common.fcoTableName + fontarray[i])) {
+                        using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(Common.fcoTableDir + Common.fcoTableName + fontarray[i]));
+                        searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
+                        if (searchResult != "?MISSING?") {
+                            fontSizeFound = true;
+                            thing1 = i;
+                            break;
+                        }
+                    }
+                    else {
+                        searchResult = "?MISSING?";
+                    }
+                }
+
+                fontCheck = true;
+            }
+
+            return searchResult;
+        }
+
+        private static bool EndsWithSaurus(String s) {
+            return s.Contains("{FILL}");
+        }
+
+        public static int sizeDet(string hexString) {
+            byte[] messageByteArray = Common.StringToByteArray(hexString);
+            int numberOfBytes = hexString.Length;
+            int MessageCharAmount = numberOfBytes / 8;
+            //byte[] CellMessageWrite = messageByteArray;
+
+            return MessageCharAmount;
+        }
+
+        public static string HEXtoTXT(string hex) {
             List<string> chunks = SplitStringIntoChunks("HEXtoTXT", hex, 11);
+            fontmerge(chunks);
             return JoinChunks(chunks);
         }
 
-        public static string TXTtoHEX(String hex) {
+        public static string TXTtoHEX(string hex) {
             List<string> chunks = SplitStringIntoChunks("TXTtoHEX", hex, 1);
             return JoinChunks(chunks);
         }
@@ -20,6 +122,8 @@ namespace SonicUnleashedFCOConv {
             List<string> chunks = new List<string>();
 
             int i2 = 0;
+            string fontsize = "";
+            string taghexString;
 
             if (mode == "HEXtoTXT") {
                 for (int i = 0; i < str.Length; i += chunkSize + 1) {
@@ -34,11 +138,51 @@ namespace SonicUnleashedFCOConv {
             if (mode == "TXTtoHEX") {
                 while (i2 < str.Length) {
                     if (str[i2] == '{') {
+
                         // Find the closing '}'
                         int endIndex = str.IndexOf('}', i2);
+                        // Include the closing '}' in the chunk
+                        int specialChunkLength = endIndex - i2 + 1;
+
+                        //{S:Small Text}, {L:Large Text}, {X:Extra Large Text}
+                        if (str[i2+2] == ':') {
+                            switch (str[i2+1]) {
+                                case 'S':
+                                    fontsize = fontarray[0];
+                                    break;
+                                case 'L':
+                                    fontsize = fontarray[1];
+                                    break;
+                                case 'X':
+                                    fontsize = fontarray[2];
+                                    break;
+                                default:
+                                    Console.WriteLine("ERROR");
+                                    Environment.Exit(0);
+                                    break;
+                            }
+
+                            // Breaking out substring
+                            Console.WriteLine(str[i2+1]);
+                            string tagstr = str.Substring(i2+3, endIndex - (i2 + 3));
+                            Console.WriteLine(tagstr);
+                            taghexString = stringConv(tagstr, fontsize);
+
+                            int MessageCharAmount = taghexString.Length / 11;
+                            int indstart = 0;
+                            for (int i = 0; i < MessageCharAmount; i++) {
+                                string tempchunk = taghexString.Substring(indstart, 11);
+                                Console.WriteLine(tempchunk);
+                                chunks.Add(tempchunk);
+                                indstart = indstart + 11;
+                            }
+
+                            i2 = endIndex + 1;
+                            continue;
+                        }
+                        
+                        //Standard Exit
                         if (endIndex != -1) {
-                            // Include the closing '}' in the chunk
-                            int specialChunkLength = endIndex - i2 + 1;
                             chunks.Add(JSONRead(mode, str.Substring(i2, specialChunkLength)));
                             i2 += specialChunkLength; // Move the index past this special chunk
                             continue;
@@ -87,24 +231,41 @@ namespace SonicUnleashedFCOConv {
                 string searchResult = SearchHexStringForLetter(doc.RootElement, hexString);
 
                 if (searchResult == "?MISSING?") {
-                    using JsonDocument docIcon = JsonDocument.Parse(File.ReadAllText(iconsTablePath));
-                    searchResult = SearchHexStringForLetter(docIcon.RootElement, hexString);
+                    searchResult = tableSearchCheck(hexString);
 
-                    if (searchResult == "?MISSING?") {
+                    if (searchResult == "?MISSING?" && iconCheck == true) {
+                        searchResult = tableSearchCheck(hexString);
+                    }
+                    if (searchResult != "?MISSING?" && fontSizeFound == true) {
+                        // Thing
+                        searchResult = "{" + Enum.GetName(typeof(FontSizes), thing1) + ":" + searchResult + "}";
+                        Console.WriteLine(searchResult);
+                        fontSizeFound = false;
+                    }
+                    if (searchResult == "?MISSING?" && fontCheck == true) {
                         Common.noLetter = true;
+                        iconCheck = false;
+                        fontCheck = false;
                         missinglist.Add("HexString: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                     }
 
+                    iconCheck = false;
+                    fontCheck = false;
+                    fontSizeFound = false;
                     return searchResult;
                 }
-                else {
+                /* else {
                     if (searchResult == "?MISSING") {
                         Common.noLetter = true;
+                        iconCheck = false;
+                        fontCheck = false;
                         missinglist.Add("HexString: " + hexString + " not found in the table " + Common.fcoTableName + "!");
                     }
 
                     return searchResult;
-                }
+                } */
+
+                return searchResult;
             }
             if (searchMode == "TXTtoHEX") {
                 if (hexString.Contains("{")) {

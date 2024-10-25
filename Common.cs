@@ -107,6 +107,7 @@ namespace SonicUnleashedFCOConv {
             Console.WriteLine("Please Input the number corresponding to the original location of your FCO file:");
             Console.WriteLine("\n1: Languages\n2: Subtitle");
 
+            string[] location = {"Languages/", "Subtitle/"};
             string[] language = {"English/", "French/", "German/", "Italian/", "Japanese/", "Spanish/"};
             string[] version = {"Retail/", "DLC/", "Preview/"};
 
@@ -119,11 +120,13 @@ namespace SonicUnleashedFCOConv {
                 return;
             }
             if (userInput == "1") {
-                fcoTableName = "Languages/";
+                IndexCheck(userInput, location.Length);
+                fcoTableName += location[Convert.ToInt32(userInput) - 1];
                 Translator.iconsTablePath = fcoTableDir + "Icons.json";
             }
             if (userInput == "2") {
-                fcoTableName = "Subtitle/";
+                IndexCheck(userInput, location.Length);
+                fcoTableName += location[Convert.ToInt32(userInput) - 1];
             }
 
             Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
