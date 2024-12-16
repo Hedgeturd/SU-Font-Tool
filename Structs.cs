@@ -12,7 +12,6 @@ public static class Structs {
     }
 
     public struct Skip {
-        public int skip1 { get; set; }
         public int skip2 { get; set; }
         public int skip2Big { get; set; }
         public int skip3 { get; set; }
@@ -58,6 +57,8 @@ public static class Structs {
         public List<ColourMain> ColourMainList { get; set; }
         public List<ColourSub1> ColourSub1List { get; set; }
         public List<ColourSub2> ColourSub2List { get; set; }
+        //public List<Skip> SkipList { get; set; }
+        public int Alignment { get; set; }
         public List<Highlight> HighlightList { get; set; }
     }
 

@@ -34,6 +34,12 @@ namespace SonicUnleashedFCOConv {
                                 if (cellNode.Name == "Cell") {
                                     Structs.Cell cell = new Structs.Cell();
                                     cell.CellName = cellNode.Attributes.GetNamedItem("Name")!.Value!;   // Cell's Name
+                                    
+                                    cell.Alignment = int.Parse(cellNode.Attributes.GetNamedItem("Alignment")!.Value!);
+                                    if (cell.Alignment > 3) {
+                                        cell.Alignment = 0;
+                                    }
+
                                     foreach (XmlElement messageNode in cellNode.ChildNodes) {
                                         if (messageNode.Name == "Message") {
                                             cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
@@ -203,38 +209,43 @@ namespace SonicUnleashedFCOConv {
                     binaryWriter.Write(Common.EndianSwap(0x00000004));
 
                     for (int a = 0; a < groups[g].CellList[c].ColourMainList.Count; a++) {
+                        var maincolour = groups[g].CellList[c].ColourMainList[a];
+                        var sub1colour = groups[g].CellList[c].ColourSub1List[a];
+                        var sub2colour = groups[g].CellList[c].ColourSub2List[a];
+
                         //Main Colours
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourMainList[a].colourMainStart));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourMainList[a].colourMainEnd));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourMainList[a].colourMainMarker));
-                        binaryWriter.Write(groups[g].CellList[c].ColourMainList[a].colourMainAlpha);
-                        binaryWriter.Write(groups[g].CellList[c].ColourMainList[a].colourMainRed);
-                        binaryWriter.Write(groups[g].CellList[c].ColourMainList[a].colourMainGreen);
-                        binaryWriter.Write(groups[g].CellList[c].ColourMainList[a].colourMainBlue);
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainStart));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainEnd));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainMarker));
+                        binaryWriter.Write(maincolour.colourMainAlpha);
+                        binaryWriter.Write(maincolour.colourMainRed);
+                        binaryWriter.Write(maincolour.colourMainGreen);
+                        binaryWriter.Write(maincolour.colourMainBlue);
 
                         //Sub Colours 1
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub1List[a].colourSub1Start));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub1List[a].colourSub1End));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub1List[a].colourSub1Marker));
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub1List[a].colourSub1Alpha);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub1List[a].colourSub1Red);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub1List[a].colourSub1Green);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub1List[a].colourSub1Blue);
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1Start));
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1End));
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1Marker));
+                        binaryWriter.Write(sub1colour.colourSub1Alpha);
+                        binaryWriter.Write(sub1colour.colourSub1Red);
+                        binaryWriter.Write(sub1colour.colourSub1Green);
+                        binaryWriter.Write(sub1colour.colourSub1Blue);
 
                         //Sub Colours 2
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub2List[a].colourSub2Start));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub2List[a].colourSub2End));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourSub2List[a].colourSub2Marker));
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub2List[a].colourSub2Alpha);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub2List[a].colourSub2Red);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub2List[a].colourSub2Green);
-                        binaryWriter.Write(groups[g].CellList[c].ColourSub2List[a].colourSub2Blue);
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2Start));
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2End));
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2Marker));
+                        binaryWriter.Write(sub2colour.colourSub2Alpha);
+                        binaryWriter.Write(sub2colour.colourSub2Red);
+                        binaryWriter.Write(sub2colour.colourSub2Green);
+                        binaryWriter.Write(sub2colour.colourSub2Blue);
 
                         //End Colours
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourMainList[a].colourMainStart));
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].ColourMainList[a].colourMainEnd));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainStart));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainEnd));
                         binaryWriter.Write(Common.EndianSwap(0x00000003));
-                        binaryWriter.Write(Common.EndianSwap(0x00000000));
+
+                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].Alignment));
 
                         if (groups[g].CellList[c].HighlightList != null) {
                             binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].HighlightList.Count));

@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace SonicUnleashedFCOConv {
     public static class FCO {
@@ -118,10 +119,9 @@ namespace SonicUnleashedFCOConv {
 
                     // Separator
                     Structs.Skip skipData = new Structs.Skip();
-                    try {
-                        skipData.skip1 = binaryReader.ReadInt32();
-                    }
-                    catch (EndOfStreamException) {
+                    cellData.Alignment = Common.EndianSwap(binaryReader.ReadInt32());
+
+                    if (cellData.Alignment > 3) {
                         structureError = true;
                         address = binaryReader.BaseStream.Position;
                         return;
@@ -149,6 +149,7 @@ namespace SonicUnleashedFCOConv {
                         Highlights.Add(hightlightData);
                         Common.skipFlag = true;
                     }
+
                     cellData.HighlightList = Highlights;
 
                     // Back to Separator
@@ -190,6 +191,7 @@ namespace SonicUnleashedFCOConv {
                 foreach (Structs.Cell cell in group.CellList) {
                     writer.WriteStartElement("Cell");
                     writer.WriteAttributeString("Name", cell.CellName);
+                    writer.WriteAttributeString("Alignment", cell.Alignment.ToString());
 
                     writer.WriteStartElement("Message");
                     writer.WriteAttributeString("MessageData", cell.CellMessage);
@@ -233,6 +235,10 @@ namespace SonicUnleashedFCOConv {
                         writer.WriteAttributeString("Blue", colourSub2.colourSub2Blue.ToString());
                         writer.WriteEndElement();
                     }
+
+                    //writer.WriteStartElement("Hithere");
+                    
+                    //writer.WriteEndElement();
 
                     while (highlightlocal != null) {
                         foreach (string highlight in highlightlocal) {
