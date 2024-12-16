@@ -49,6 +49,16 @@ namespace SonicUnleashedFCOConv {
                 }
 
                 chunkinx++;
+
+                if (chunkinx == chunks.Count && fontsizer) {
+                    startinx[thing] = specialinx;
+                    endinx[thing] = chunkinx;
+                    chunkre[thing] = chunks[chunkinx - 1].Substring(1,1) + "," + mergedContent.ToString();
+                    mergedContent.Clear();
+                    fontsizer = false;
+                    Console.WriteLine(startinx[thing] + endinx[thing] + chunkre[thing]);
+                    thing++;
+                }
             }
 
             for (int i = 0; i < thing; i++) {
