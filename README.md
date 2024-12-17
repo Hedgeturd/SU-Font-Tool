@@ -12,7 +12,7 @@ You can also simply drag and drop supported file formats onto the executable.
 ***
 
 ## Formats
-### Font-Texture
+### Font-Texture (Experimental)
 FTE file formats contain data which help assign texture sprites to character slots to be used by the FCO in game.\
 When converted to an XML you can view and edit the different fields to your liking.
 ```xml
