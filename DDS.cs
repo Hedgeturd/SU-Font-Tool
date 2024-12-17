@@ -24,11 +24,11 @@ namespace SonicUnleashedFCOConv {
             Console.WriteLine("Provide the following files as PNG images");
 
             foreach(Structs.Texture texture in textures) {
-                Console.WriteLine("Please provide the path of " + texture.TextureName + ".");
+                Console.WriteLine("Please provide the path of " + texture.textureName + ".");
                 string ddsPath = Console.ReadLine().Replace("\"", "");
 
                 if (ddsPath != null && Path.GetFileNameWithoutExtension(ddsPath) != null) {
-                    int index = textures.FindIndex(0, texCount, texture => texture.TextureName == Path.GetFileNameWithoutExtension(ddsPath));
+                    int index = textures.FindIndex(0, texCount, texture => texture.textureName == Path.GetFileNameWithoutExtension(ddsPath));
                     ReadDDS(ddsPath, index);
                 }
             }
@@ -43,15 +43,15 @@ namespace SonicUnleashedFCOConv {
                     break;
                 }
 
-                int textureIndex = characters[spriteIndex].TextureIndex;
+                int textureIndex = characters[spriteIndex].textureIndex;
 
                 // If our grabbed index for the character matches our input from Process
                 if (textureIndex == extTexIndex) {
-                    string ConverseID = characters[spriteIndex].CharID.ToString();
-                    int p1_x = (int)characters[spriteIndex].CharPoint1X;
-                    int p1_y = (int)characters[spriteIndex].CharPoint1Y;
-                    int p2_x = (int)characters[spriteIndex].CharPoint2X;
-                    int p2_y = (int)characters[spriteIndex].CharPoint2Y;
+                    string ConverseID = characters[spriteIndex].convID.ToString();
+                    int p1_x = (int)characters[spriteIndex].charPoint1X;
+                    int p1_y = (int)characters[spriteIndex].charPoint1Y;
+                    int p2_x = (int)characters[spriteIndex].charPoint2X;
+                    int p2_y = (int)characters[spriteIndex].charPoint2Y;
 
                     int width = p2_x - p1_x;
                     int height = p2_y - p1_y;

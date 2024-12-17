@@ -29,11 +29,11 @@ namespace SonicUnleashedFCOConv {
                 Structs.Texture textureData = new Structs.Texture();
 
                 // Texture Name
-                textureData.TextureName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
+                textureData.textureName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
                 Common.SkipPadding(binaryReader);
 
-                textureData.TextureSizeX = Common.EndianSwap(binaryReader.ReadInt32());
-                textureData.TextureSizeY = Common.EndianSwap(binaryReader.ReadInt32());
+                textureData.textureSizeX = Common.EndianSwap(binaryReader.ReadInt32());
+                textureData.textureSizeY = Common.EndianSwap(binaryReader.ReadInt32());
 
                 textures.Add(textureData);
             }
@@ -47,19 +47,19 @@ namespace SonicUnleashedFCOConv {
             for(int i = 0; i < charaCount; i++) {
                 Structs.Character charaData = new Structs.Character();
                 
-                charaData.TextureIndex = Common.EndianSwap(binaryReader.ReadInt32());
+                charaData.textureIndex = Common.EndianSwap(binaryReader.ReadInt32());
 
-                if (charaData.TextureIndex == 2 && IndexChange == false) {
+                if (charaData.textureIndex == 2 && IndexChange == false) {
                     CurrentID += 100;
                     IndexChange = true;
                 }
 
-                charaData.CharID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
+                charaData.convID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
 
-                charaData.CharPoint1X = textures[charaData.TextureIndex].TextureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                charaData.CharPoint1Y = textures[charaData.TextureIndex].TextureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                charaData.CharPoint2X = textures[charaData.TextureIndex].TextureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                charaData.CharPoint2Y = textures[charaData.TextureIndex].TextureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint1X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint1Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint2X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint2Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
 
                 characters.Add(charaData);
                 CurrentID++;
@@ -82,9 +82,9 @@ namespace SonicUnleashedFCOConv {
             writer.WriteStartElement("Textures");
             foreach(Structs.Texture texture in textures) {
                 writer.WriteStartElement("Texture");
-                writer.WriteAttributeString("Name", texture.TextureName);
-                writer.WriteAttributeString("Size_X", texture.TextureSizeX.ToString());
-                writer.WriteAttributeString("Size_Y", texture.TextureSizeY.ToString());
+                writer.WriteAttributeString("Name", texture.textureName);
+                writer.WriteAttributeString("Size_X", texture.textureSizeX.ToString());
+                writer.WriteAttributeString("Size_Y", texture.textureSizeY.ToString());
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -94,12 +94,12 @@ namespace SonicUnleashedFCOConv {
             writer.WriteStartElement("Characters");
             foreach(Structs.Character character in characters) {
                 writer.WriteStartElement("Character");
-                writer.WriteAttributeString("TextureIndex", character.TextureIndex.ToString());
-                writer.WriteAttributeString("ConverseID", character.CharID);
-                writer.WriteAttributeString("Point1_X", character.CharPoint1X.ToString());
-                writer.WriteAttributeString("Point1_Y", character.CharPoint1Y.ToString());
-                writer.WriteAttributeString("Point2_X", character.CharPoint2X.ToString());
-                writer.WriteAttributeString("Point2_Y", character.CharPoint2Y.ToString());
+                writer.WriteAttributeString("TextureIndex", character.textureIndex.ToString());
+                writer.WriteAttributeString("ConverseID", character.convID);
+                writer.WriteAttributeString("Point1_X", character.charPoint1X.ToString());
+                writer.WriteAttributeString("Point1_Y", character.charPoint1Y.ToString());
+                writer.WriteAttributeString("Point2_X", character.charPoint2X.ToString());
+                writer.WriteAttributeString("Point2_Y", character.charPoint2Y.ToString());
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();

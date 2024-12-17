@@ -27,106 +27,106 @@ namespace SonicUnleashedFCOConv {
                         foreach (XmlElement groupNode in node.ChildNodes) {
                             Structs.Group group = new Structs.Group();
 
-                            group.GroupName = groupNode.Attributes.GetNamedItem("Name")!.Value!;    // Group's Name
+                            group.groupName = groupNode.Attributes.GetNamedItem("Name")!.Value!;    // Group's Name
 
                             List<Structs.Cell> cells = new List<Structs.Cell>();
                             foreach (XmlElement cellNode in groupNode.ChildNodes) {
                                 if (cellNode.Name == "Cell") {
                                     Structs.Cell cell = new Structs.Cell();
-                                    cell.CellName = cellNode.Attributes.GetNamedItem("Name")!.Value!;   // Cell's Name
+                                    cell.cellName = cellNode.Attributes.GetNamedItem("Name")!.Value!;   // Cell's Name
                                     
-                                    cell.Alignment = int.Parse(cellNode.Attributes.GetNamedItem("Alignment")!.Value!);
-                                    if (cell.Alignment > 3) {
-                                        cell.Alignment = 0;
+                                    cell.alignment = int.Parse(cellNode.Attributes.GetNamedItem("Alignment")!.Value!);
+                                    if (cell.alignment > 3) {
+                                        cell.alignment = 0;
                                     }
 
                                     foreach (XmlElement messageNode in cellNode.ChildNodes) {
                                         if (messageNode.Name == "Message") {
-                                            cell.CellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
-                                            string hexString = Translator.TXTtoHEX(cell.CellMessage);
+                                            cell.cellMessage = messageNode.Attributes.GetNamedItem("MessageData")!.Value!;
+                                            string hexString = Translator.TXTtoHEX(cell.cellMessage);
                                             hexString = hexString.Replace(" ", "");
 
                                             byte[] messageByteArray = Common.StringToByteArray(hexString);
                                             messageByteArray = Common.StringToByteArray(hexString);
                                             //int numberOfBytes = hexString.Length;
-                                            cell.MessageCharAmount = hexString.Length / 8;
-                                            cell.CellMessageWrite = messageByteArray;
+                                            cell.messageCharAmount = hexString.Length / 8;
+                                            cell.cellMessageWrite = messageByteArray;
                                         }
                                     }
 
-                                    List<Structs.ColourMain> coloursMain = new List<Structs.ColourMain>();  // Colour0
+                                    List<Structs.Colour> coloursMain = new List<Structs.Colour>();  // Colour0
                                     foreach (XmlElement colourNode in cellNode.ChildNodes) {
                                         if (colourNode.Name == "ColourMain") {
-                                            Structs.ColourMain colourMain = new Structs.ColourMain() {
-                                                colourMainStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
-                                                colourMainEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
-                                                colourMainMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
-                                                colourMainAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
-                                                colourMainRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
-                                                colourMainGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
-                                                colourMainBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            Structs.Colour colourMain = new Structs.Colour() {
+                                                colourStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
                                             };
                                             coloursMain.Add(colourMain);
-                                            cell.ColourMainList = coloursMain;
+                                            cell.colourMainList = coloursMain;
                                         }
                                     }
 
-                                    List<Structs.ColourSub1> coloursSub1 = new List<Structs.ColourSub1>();  // Colour1
+                                    List<Structs.Colour> coloursSub1 = new List<Structs.Colour>();  // Colour1
                                     foreach (XmlElement colourNode in cellNode.ChildNodes) {
                                         if (colourNode.Name == "ColourSub1") {
-                                            Structs.ColourSub1 colourSub1 = new Structs.ColourSub1() {
-                                                colourSub1Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
-                                                colourSub1End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
-                                                colourSub1Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
-                                                colourSub1Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
-                                                colourSub1Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
-                                                colourSub1Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
-                                                colourSub1Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            Structs.Colour colourSub1 = new Structs.Colour() {
+                                                colourStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
                                             };
                                             coloursSub1.Add(colourSub1);
-                                            cell.ColourSub1List = coloursSub1;
+                                            cell.colourSub1List = coloursSub1;
                                         }
                                     }
 
-                                    List<Structs.ColourSub2> coloursSub2 = new List<Structs.ColourSub2>();  // Colour2
+                                    List<Structs.Colour> coloursSub2 = new List<Structs.Colour>();  // Colour2
                                     foreach (XmlElement colourNode in cellNode.ChildNodes) {
                                         if (colourNode.Name == "ColourSub2") {
-                                            Structs.ColourSub2 colourSub2 = new Structs.ColourSub2() {
-                                                colourSub2Start = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
-                                                colourSub2End = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
-                                                colourSub2Marker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
-                                                colourSub2Alpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
-                                                colourSub2Red = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
-                                                colourSub2Green = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
-                                                colourSub2Blue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            Structs.Colour colourSub2 = new Structs.Colour() {
+                                                colourStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!),
                                             };
                                             coloursSub2.Add(colourSub2);
-                                            cell.ColourSub2List = coloursSub2;
+                                            cell.colourSub2List = coloursSub2;
                                         }
                                     }
 
-                                    List<Structs.Highlight> highlights = new List<Structs.Highlight>();     // Highlight
+                                    List<Structs.Colour> highlights = new List<Structs.Colour>();     // Highlight
                                     int hightlightcount = 0;
                                     foreach (XmlElement highlightNode in cellNode.ChildNodes) {
                                         if (highlightNode.Name == "Highlight" + hightlightcount) {
-                                            Structs.Highlight highlight = new Structs.Highlight() {
-                                                highlightStart = int.Parse(highlightNode.Attributes.GetNamedItem("Start")!.Value!),
-                                                highlightEnd = int.Parse(highlightNode.Attributes.GetNamedItem("End")!.Value!),
-                                                highlightMarker = int.Parse(highlightNode.Attributes.GetNamedItem("Marker")!.Value!),
-                                                highlightAlpha = byte.Parse(highlightNode.Attributes.GetNamedItem("Alpha")!.Value!),
-                                                highlightRed = byte.Parse(highlightNode.Attributes.GetNamedItem("Red")!.Value!),
-                                                highlightGreen = byte.Parse(highlightNode.Attributes.GetNamedItem("Green")!.Value!),
-                                                highlightBlue = byte.Parse(highlightNode.Attributes.GetNamedItem("Blue")!.Value!),
+                                            Structs.Colour highlight = new Structs.Colour() {
+                                                colourStart = int.Parse(highlightNode.Attributes.GetNamedItem("Start")!.Value!),
+                                                colourEnd = int.Parse(highlightNode.Attributes.GetNamedItem("End")!.Value!),
+                                                colourMarker = int.Parse(highlightNode.Attributes.GetNamedItem("Marker")!.Value!),
+                                                colourAlpha = byte.Parse(highlightNode.Attributes.GetNamedItem("Alpha")!.Value!),
+                                                colourRed = byte.Parse(highlightNode.Attributes.GetNamedItem("Red")!.Value!),
+                                                colourGreen = byte.Parse(highlightNode.Attributes.GetNamedItem("Green")!.Value!),
+                                                colourBlue = byte.Parse(highlightNode.Attributes.GetNamedItem("Blue")!.Value!),
                                             };
                                             highlights.Add(highlight);
-                                            cell.HighlightList = highlights;
+                                            cell.highlightList = highlights;
                                             hightlightcount++;
                                         }
                                     }
 
                                     cells.Add(cell);
                                 }
-                                group.CellList = cells;
+                                group.cellList = cells;
                             }
                             groups.Add(group);
                         }
@@ -142,9 +142,9 @@ namespace SonicUnleashedFCOConv {
                     if (node.Name == "Textures") { 
                         foreach (XmlElement textureNode in node.ChildNodes) {
                             Structs.Texture texture = new Structs.Texture() {
-                                TextureName = textureNode.Attributes.GetNamedItem("Name")!.Value!,
-                                TextureSizeX = int.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
-                                TextureSizeY = int.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!),
+                                textureName = textureNode.Attributes.GetNamedItem("Name")!.Value!,
+                                textureSizeX = int.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
+                                textureSizeY = int.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!),
                             };
 
                             textures.Add(texture);
@@ -155,12 +155,12 @@ namespace SonicUnleashedFCOConv {
                     if (node.Name == "Characters") {
                         foreach (XmlElement charaNode in node.ChildNodes) {
                             Structs.Character character = new Structs.Character() {
-                                TextureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
-                                CharID = charaNode.Attributes.GetNamedItem("ConverseID")!.Value!,
-                                CharPoint1X = int.Parse(charaNode.Attributes.GetNamedItem("Point1_X")!.Value!),
-                                CharPoint1Y = int.Parse(charaNode.Attributes.GetNamedItem("Point1_Y")!.Value!),
-                                CharPoint2X = int.Parse(charaNode.Attributes.GetNamedItem("Point2_X")!.Value!),
-                                CharPoint2Y = int.Parse(charaNode.Attributes.GetNamedItem("Point2_Y")!.Value!),
+                                textureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
+                                convID = charaNode.Attributes.GetNamedItem("ConverseID")!.Value!,
+                                charPoint1X = int.Parse(charaNode.Attributes.GetNamedItem("Point1_X")!.Value!),
+                                charPoint1Y = int.Parse(charaNode.Attributes.GetNamedItem("Point1_Y")!.Value!),
+                                charPoint2X = int.Parse(charaNode.Attributes.GetNamedItem("Point2_X")!.Value!),
+                                charPoint2Y = int.Parse(charaNode.Attributes.GetNamedItem("Point2_Y")!.Value!),
                             };
 
                             characters.Add(character);
@@ -177,9 +177,6 @@ namespace SonicUnleashedFCOConv {
         public static void WriteFCO(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             File.Delete(Path.Combine(filePath + ".fco"));
-
-            Encoder UTF16 = Encoding.Unicode.GetEncoder();
-
             BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fco", FileMode.OpenOrCreate));
 
             // Writing Header
@@ -190,74 +187,76 @@ namespace SonicUnleashedFCOConv {
             binaryWriter.Write(Common.EndianSwap(groups.Count));
             for (int g = 0; g < groups.Count; g++) {
                 // Group Name
-                binaryWriter.Write(Common.EndianSwap(groups[g].GroupName.Length));
-                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(groups[g].GroupName, '@'));
+                binaryWriter.Write(Common.EndianSwap(groups[g].groupName.Length));
+                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(groups[g].groupName, '@'));
 
                 // Cell Count
-                binaryWriter.Write(Common.EndianSwap(groups[g].CellList.Count));
-                for (int c = 0; c < groups[g].CellList.Count; c++) {
+                binaryWriter.Write(Common.EndianSwap(groups[g].cellList.Count));
+                for (int c = 0; c < groups[g].cellList.Count; c++) {
+                    var standardArea = groups[g].cellList[c];
                     // Cell Name
-                    binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].CellName.Length));
-                    Common.WriteStringWithoutLength(binaryWriter, Common.PadString(groups[g].CellList[c].CellName, '@'));
+                    binaryWriter.Write(Common.EndianSwap(standardArea.cellName.Length));
+                    Common.WriteStringWithoutLength(binaryWriter, Common.PadString(standardArea.cellName, '@'));
 
                     //Message Data
-                    binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].MessageCharAmount));
-                    binaryWriter.Write(groups[g].CellList[c].CellMessageWrite);
+                    binaryWriter.Write(Common.EndianSwap(standardArea.messageCharAmount));
+                    binaryWriter.Write(standardArea.cellMessageWrite);
                     //Console.WriteLine("Message Data Written!");
 
                     //Colour Start
                     binaryWriter.Write(Common.EndianSwap(0x00000004));
 
-                    for (int a = 0; a < groups[g].CellList[c].ColourMainList.Count; a++) {
-                        var maincolour = groups[g].CellList[c].ColourMainList[a];
-                        var sub1colour = groups[g].CellList[c].ColourSub1List[a];
-                        var sub2colour = groups[g].CellList[c].ColourSub2List[a];
+                    for (int a = 0; a < standardArea.colourMainList.Count; a++) {
+                        var maincolour = standardArea.colourMainList[a];
+                        var sub1colour = standardArea.colourSub1List[a];
+                        var sub2colour = standardArea.colourSub2List[a];
 
                         //Main Colours
-                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainStart));
-                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainEnd));
-                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainMarker));
-                        binaryWriter.Write(maincolour.colourMainAlpha);
-                        binaryWriter.Write(maincolour.colourMainRed);
-                        binaryWriter.Write(maincolour.colourMainGreen);
-                        binaryWriter.Write(maincolour.colourMainBlue);
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourStart));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourEnd));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMarker));
+                        binaryWriter.Write(maincolour.colourAlpha);
+                        binaryWriter.Write(maincolour.colourRed);
+                        binaryWriter.Write(maincolour.colourGreen);
+                        binaryWriter.Write(maincolour.colourBlue);
 
                         //Sub Colours 1
-                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1Start));
-                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1End));
-                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourSub1Marker));
-                        binaryWriter.Write(sub1colour.colourSub1Alpha);
-                        binaryWriter.Write(sub1colour.colourSub1Red);
-                        binaryWriter.Write(sub1colour.colourSub1Green);
-                        binaryWriter.Write(sub1colour.colourSub1Blue);
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourStart));
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourEnd));
+                        binaryWriter.Write(Common.EndianSwap(sub1colour.colourMarker));
+                        binaryWriter.Write(sub1colour.colourAlpha);
+                        binaryWriter.Write(sub1colour.colourRed);
+                        binaryWriter.Write(sub1colour.colourGreen);
+                        binaryWriter.Write(sub1colour.colourBlue);
 
                         //Sub Colours 2
-                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2Start));
-                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2End));
-                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourSub2Marker));
-                        binaryWriter.Write(sub2colour.colourSub2Alpha);
-                        binaryWriter.Write(sub2colour.colourSub2Red);
-                        binaryWriter.Write(sub2colour.colourSub2Green);
-                        binaryWriter.Write(sub2colour.colourSub2Blue);
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourStart));
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourEnd));
+                        binaryWriter.Write(Common.EndianSwap(sub2colour.colourMarker));
+                        binaryWriter.Write(sub2colour.colourAlpha);
+                        binaryWriter.Write(sub2colour.colourRed);
+                        binaryWriter.Write(sub2colour.colourGreen);
+                        binaryWriter.Write(sub2colour.colourBlue);
 
                         //End Colours
-                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainStart));
-                        binaryWriter.Write(Common.EndianSwap(maincolour.colourMainEnd));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourStart));
+                        binaryWriter.Write(Common.EndianSwap(maincolour.colourEnd));
                         binaryWriter.Write(Common.EndianSwap(0x00000003));
 
-                        binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].Alignment));
+                        binaryWriter.Write(Common.EndianSwap(standardArea.alignment));
 
-                        if (groups[g].CellList[c].HighlightList != null) {
-                            binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].HighlightList.Count));
+                        if (standardArea.highlightList != null) {
+                            binaryWriter.Write(Common.EndianSwap(standardArea.highlightList.Count));
 
-                            for (int h = 0; h < groups[g].CellList[c].HighlightList.Count; h++) {
-                                binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].HighlightList[h].highlightStart));
-                                binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].HighlightList[h].highlightEnd));
-                                binaryWriter.Write(Common.EndianSwap(groups[g].CellList[c].HighlightList[h].highlightMarker));
-                                binaryWriter.Write(groups[g].CellList[c].HighlightList[h].highlightAlpha);
-                                binaryWriter.Write(groups[g].CellList[c].HighlightList[h].highlightRed);
-                                binaryWriter.Write(groups[g].CellList[c].HighlightList[h].highlightGreen);
-                                binaryWriter.Write(groups[g].CellList[c].HighlightList[h].highlightBlue);
+                            for (int h = 0; h < standardArea.highlightList.Count; h++) {
+                                var highlights = standardArea.highlightList[h];
+                                binaryWriter.Write(Common.EndianSwap(highlights.colourStart));
+                                binaryWriter.Write(Common.EndianSwap(highlights.colourEnd));
+                                binaryWriter.Write(Common.EndianSwap(highlights.colourMarker));
+                                binaryWriter.Write(highlights.colourAlpha);
+                                binaryWriter.Write(highlights.colourRed);
+                                binaryWriter.Write(highlights.colourGreen);
+                                binaryWriter.Write(highlights.colourBlue);
                                 Common.skipFlag = true;
                             }
                         }
@@ -285,9 +284,6 @@ namespace SonicUnleashedFCOConv {
         public static void WriteFTE(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             File.Delete(Path.Combine(filePath + ".fte"));
-
-            Encoder UTF16 = Encoding.Unicode.GetEncoder();
-
             BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fte", FileMode.OpenOrCreate));
 
             // Writing Header
@@ -297,19 +293,21 @@ namespace SonicUnleashedFCOConv {
             // Texture Count
             binaryWriter.Write(Common.EndianSwap(textures.Count));
             for (int t = 0; t < textures.Count; t++) {
-                binaryWriter.Write(Common.EndianSwap(textures[t].TextureName.Length));
-                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(textures[t].TextureName, '@'));
-                binaryWriter.Write(Common.EndianSwap(textures[t].TextureSizeX));
-                binaryWriter.Write(Common.EndianSwap(textures[t].TextureSizeY));
+                binaryWriter.Write(Common.EndianSwap(textures[t].textureName.Length));
+                Common.WriteStringWithoutLength(binaryWriter, Common.PadString(textures[t].textureName, '@'));
+                binaryWriter.Write(Common.EndianSwap(textures[t].textureSizeX));
+                binaryWriter.Write(Common.EndianSwap(textures[t].textureSizeY));
             }
 
             binaryWriter.Write(Common.EndianSwap(characters.Count));
-            for (int c = 0; c < characters.Count; c++) {
-                binaryWriter.Write(Common.EndianSwap(characters[c].TextureIndex));
-                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint1X / textures[characters[c].TextureIndex].TextureSizeX));
-                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint1Y / textures[characters[c].TextureIndex].TextureSizeY));
-                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint2X / textures[characters[c].TextureIndex].TextureSizeX));
-                binaryWriter.Write(Common.EndianSwapFloat(characters[c].CharPoint2Y / textures[characters[c].TextureIndex].TextureSizeY));
+            for (int c = 0; c < characters.Count; c++)
+            {
+                var textureData = textures[characters[c].textureIndex];
+                binaryWriter.Write(Common.EndianSwap(characters[c].textureIndex));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].charPoint1X / textureData.textureSizeX));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].charPoint1Y / textureData.textureSizeY));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].charPoint2X / textureData.textureSizeX));
+                binaryWriter.Write(Common.EndianSwapFloat(characters[c].charPoint2Y / textureData.textureSizeY));
             }
 
             binaryWriter.Close();

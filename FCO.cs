@@ -1,6 +1,5 @@
 using System.Xml;
 using System.Text;
-using System.Runtime.CompilerServices;
 
 namespace SonicUnleashedFCOConv {
     public static class FCO {
@@ -14,10 +13,8 @@ namespace SonicUnleashedFCOConv {
 
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
-
-            // Why do we need 2 encodings? Well, the actual text data for the cells are in unicode,
-            // when names of cells, categories and styles are in UTF-8
-            Encoding Unicode = Encoding.GetEncoding("Unicode");
+            
+            // Names of Groups and Cells are in UTF-8
             Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");
 
             long fileHeader = binaryReader.ReadInt64();   // This is always the same
@@ -35,7 +32,7 @@ namespace SonicUnleashedFCOConv {
                 Structs.Group groupData = new Structs.Group();
 
                 // Group Name
-                groupData.GroupName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
+                groupData.groupName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
                 Common.SkipPadding(binaryReader);
 
                 // Cells count
@@ -48,12 +45,12 @@ namespace SonicUnleashedFCOConv {
                     Structs.Cell cellData = new Structs.Cell();
 
                     // Cell's name
-                    cellData.CellName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
+                    cellData.cellName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
                     Common.SkipPadding(binaryReader);
 
                     int cellLength = Common.EndianSwap(binaryReader.ReadInt32());
                     byte[] cellMessageBytes = binaryReader.ReadBytes(cellLength * 4);
-                    cellData.CellMessage = Translator.HEXtoTXT(BitConverter.ToString(cellMessageBytes).Replace("-", " "));
+                    cellData.cellMessage = Translator.HEXtoTXT(BitConverter.ToString(cellMessageBytes).Replace("-", " "));
 
                     int colourHeader = Common.EndianSwap(binaryReader.ReadInt32());
                     if (colourHeader != 4) {
@@ -63,46 +60,46 @@ namespace SonicUnleashedFCOConv {
                     }
 
                     //Colour Data
-                    List<Structs.ColourMain> ColourMain = new List<Structs.ColourMain>();
+                    List<Structs.Colour> ColourMain = new List<Structs.Colour>();
                     for (int a = 0; a < 1; a++) {
-                        Structs.ColourMain colourMainData = new Structs.ColourMain() {
-                            colourMainStart = binaryReader.ReadInt32(),
-                            colourMainEnd = binaryReader.ReadInt32(),
-                            colourMainMarker = binaryReader.ReadInt32(),
-                            colourMainAlpha = binaryReader.ReadByte(),
-                            colourMainRed = binaryReader.ReadByte(),
-                            colourMainGreen = binaryReader.ReadByte(),
-                            colourMainBlue = binaryReader.ReadByte(),
+                        Structs.Colour colourMainData = new Structs.Colour() {
+                            colourStart = binaryReader.ReadInt32(),
+                            colourEnd = binaryReader.ReadInt32(),
+                            colourMarker = binaryReader.ReadInt32(),
+                            colourAlpha = binaryReader.ReadByte(),
+                            colourRed = binaryReader.ReadByte(),
+                            colourGreen = binaryReader.ReadByte(),
+                            colourBlue = binaryReader.ReadByte(),
                         };
                         ColourMain.Add(colourMainData);
                     }
 
                     //ColourSub1 Data
-                    List<Structs.ColourSub1> ColourSub1 = new List<Structs.ColourSub1>();
+                    List<Structs.Colour> ColourSub1 = new List<Structs.Colour>();
                     for (int a = 0; a < 1; a++) {
-                        Structs.ColourSub1 colourSub1Data = new Structs.ColourSub1() {
-                            colourSub1Start = binaryReader.ReadInt32(),
-                            colourSub1End = binaryReader.ReadInt32(),
-                            colourSub1Marker = binaryReader.ReadInt32(),
-                            colourSub1Alpha = binaryReader.ReadByte(),
-                            colourSub1Red = binaryReader.ReadByte(),
-                            colourSub1Green = binaryReader.ReadByte(),
-                            colourSub1Blue = binaryReader.ReadByte(),
+                        Structs.Colour colourSub1Data = new Structs.Colour() {
+                            colourStart = binaryReader.ReadInt32(),
+                            colourEnd = binaryReader.ReadInt32(),
+                            colourMarker = binaryReader.ReadInt32(),
+                            colourAlpha = binaryReader.ReadByte(),
+                            colourRed = binaryReader.ReadByte(),
+                            colourGreen = binaryReader.ReadByte(),
+                            colourBlue = binaryReader.ReadByte(),
                         };
                         ColourSub1.Add(colourSub1Data);
                     }
 
                     //ColourSub2 Data
-                    List<Structs.ColourSub2> ColourSub2 = new List<Structs.ColourSub2>();
+                    List<Structs.Colour> ColourSub2 = new List<Structs.Colour>();
                     for (int a = 0; a < 1; a++) {
-                        Structs.ColourSub2 colourSub2Data = new Structs.ColourSub2() {
-                            colourSub2Start = binaryReader.ReadInt32(),
-                            colourSub2End = binaryReader.ReadInt32(),
-                            colourSub2Marker = binaryReader.ReadInt32(),
-                            colourSub2Alpha = binaryReader.ReadByte(),
-                            colourSub2Red = binaryReader.ReadByte(),
-                            colourSub2Green = binaryReader.ReadByte(),
-                            colourSub2Blue = binaryReader.ReadByte(),
+                        Structs.Colour colourSub2Data = new Structs.Colour() {
+                            colourStart = binaryReader.ReadInt32(),
+                            colourEnd = binaryReader.ReadInt32(),
+                            colourMarker = binaryReader.ReadInt32(),
+                            colourAlpha = binaryReader.ReadByte(),
+                            colourRed = binaryReader.ReadByte(),
+                            colourGreen = binaryReader.ReadByte(),
+                            colourBlue = binaryReader.ReadByte(),
                         };
 
                         // int colourExtraStart =   //I'm still unsure what these values do
@@ -113,47 +110,45 @@ namespace SonicUnleashedFCOConv {
 
                         ColourSub2.Add(colourSub2Data);
                     }
-                    cellData.ColourMainList = ColourMain;
-                    cellData.ColourSub1List = ColourSub1;
-                    cellData.ColourSub2List = ColourSub2;
+                    cellData.colourMainList = ColourMain;
+                    cellData.colourSub1List = ColourSub1;
+                    cellData.colourSub2List = ColourSub2;
 
                     // Separator
-                    Structs.Skip skipData = new Structs.Skip();
-                    cellData.Alignment = Common.EndianSwap(binaryReader.ReadInt32());
-
-                    if (cellData.Alignment > 3) {
+                    cellData.alignment = Common.EndianSwap(binaryReader.ReadInt32());
+                    if (cellData.alignment > 3) {
                         structureError = true;
                         address = binaryReader.BaseStream.Position;
                         return;
                     }
 
                     // Separator
-                    skipData.skip2 = Common.EndianSwap(binaryReader.ReadInt32());   // If this is anything but 0, it's the highlight count in the cell
-                    if (skipData.skip2 >= 1) {
-                        highlightlocal.Add(groupData.GroupName + ": " + cellData.CellName);
+                    cellData.highlightCount = Common.EndianSwap(binaryReader.ReadInt32());   // If this is anything but 0, it's the highlight count in the cell
+                    if (cellData.highlightCount >= 1) {
+                        highlightlocal.Add(groupData.groupName + ": " + cellData.cellName);
                     }
 
                     // Highlights
-                    List<Structs.Highlight> Highlights = new List<Structs.Highlight>();
-                    for (int h = 0; h < skipData.skip2; h++) {
-                        Structs.Highlight hightlightData = new Structs.Highlight() {
-                            highlightStart = binaryReader.ReadInt32(),
-                            highlightEnd = binaryReader.ReadInt32(),
-                            highlightMarker = binaryReader.ReadInt32(),
-                            highlightAlpha = binaryReader.ReadByte(),
-                            highlightRed = binaryReader.ReadByte(),
-                            highlightGreen = binaryReader.ReadByte(),
-                            highlightBlue = binaryReader.ReadByte(),
+                    List<Structs.Colour> Highlights = new List<Structs.Colour>();
+                    for (int h = 0; h < cellData.highlightCount; h++) {
+                        Structs.Colour hightlightData = new Structs.Colour() {
+                            colourStart = binaryReader.ReadInt32(),
+                            colourEnd = binaryReader.ReadInt32(),
+                            colourMarker = binaryReader.ReadInt32(),
+                            colourAlpha = binaryReader.ReadByte(),
+                            colourRed = binaryReader.ReadByte(),
+                            colourGreen = binaryReader.ReadByte(),
+                            colourBlue = binaryReader.ReadByte(),
                         };
 
                         Highlights.Add(hightlightData);
                         Common.skipFlag = true;
                     }
 
-                    cellData.HighlightList = Highlights;
+                    cellData.highlightList = Highlights;
 
                     // Back to Separator
-                    int skip3 = binaryReader.ReadInt32();
+                    binaryReader.ReadInt32();   // Yet to find out what this really does..
 
                     Cells.Add(cellData);
                     /*  This will add together the following into the Struct:
@@ -161,14 +156,13 @@ namespace SonicUnleashedFCOConv {
                     //Console.WriteLine("Cell Read!");
                 }
 
-                groupData.CellList = Cells;
+                groupData.cellList = Cells;
                 groups.Add(groupData);
             }
 
             binaryReader.Close();
             binaryReader.Dispose();
             Console.WriteLine("FCO read!");
-            return;
         }
 
         public static void WriteXML(string path) {
@@ -180,69 +174,67 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FCO");
+            // This is used later once the XML is used to convert the data back into an FCO format
             writer.WriteAttributeString("Table", Common.fcoTableName);
-
-            // Categories
+            
             writer.WriteStartElement("Groups");
             foreach (Structs.Group group in groups) {
                 writer.WriteStartElement("Group");
-                writer.WriteAttributeString("Name", group.GroupName);
+                writer.WriteAttributeString("Name", group.groupName);
 
-                foreach (Structs.Cell cell in group.CellList) {
+                foreach (Structs.Cell cell in group.cellList) {
                     writer.WriteStartElement("Cell");
-                    writer.WriteAttributeString("Name", cell.CellName);
-                    writer.WriteAttributeString("Alignment", cell.Alignment.ToString());
+                    // These parameters are part of the "Cell" Element Header
+                    writer.WriteAttributeString("Name", cell.cellName);
+                    writer.WriteAttributeString("Alignment", cell.alignment.ToString());
 
+                    // The following Elements are all within the "Cell" Element
                     writer.WriteStartElement("Message");
-                    writer.WriteAttributeString("MessageData", cell.CellMessage);
+                    writer.WriteAttributeString("MessageData", cell.cellMessage);
                     writer.WriteEndElement();
 
                     writer.WriteStartElement("ColourMain");
-                    foreach (Structs.ColourMain colourMain in cell.ColourMainList) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourMain.colourMainStart).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourMain.colourMainEnd).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourMain.colourMainMarker).ToString());
+                    foreach (Structs.Colour colourMain in cell.colourMainList) {
+                        writer.WriteAttributeString("Start", Common.EndianSwap(colourMain.colourStart).ToString());
+                        writer.WriteAttributeString("End", Common.EndianSwap(colourMain.colourEnd).ToString());
+                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourMain.colourMarker).ToString());
 
-                        writer.WriteAttributeString("Alpha", colourMain.colourMainAlpha.ToString());
-                        writer.WriteAttributeString("Red", colourMain.colourMainRed.ToString());
-                        writer.WriteAttributeString("Green", colourMain.colourMainGreen.ToString());
-                        writer.WriteAttributeString("Blue", colourMain.colourMainBlue.ToString());
+                        writer.WriteAttributeString("Alpha", colourMain.colourAlpha.ToString());
+                        writer.WriteAttributeString("Red", colourMain.colourRed.ToString());
+                        writer.WriteAttributeString("Green", colourMain.colourGreen.ToString());
+                        writer.WriteAttributeString("Blue", colourMain.colourBlue.ToString());
                         writer.WriteEndElement();
                     }
 
                     writer.WriteStartElement("ColourSub1");
-                    foreach (Structs.ColourSub1 colourSub1 in cell.ColourSub1List) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub1.colourSub1Start).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub1.colourSub1End).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub1.colourSub1Marker).ToString());
+                    foreach (Structs.Colour colourSub1 in cell.colourSub1List) {
+                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub1.colourStart).ToString());
+                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub1.colourEnd).ToString());
+                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub1.colourMarker).ToString());
 
-                        writer.WriteAttributeString("Alpha", colourSub1.colourSub1Alpha.ToString());
-                        writer.WriteAttributeString("Red", colourSub1.colourSub1Red.ToString());
-                        writer.WriteAttributeString("Green", colourSub1.colourSub1Green.ToString());
-                        writer.WriteAttributeString("Blue", colourSub1.colourSub1Blue.ToString());
+                        writer.WriteAttributeString("Alpha", colourSub1.colourAlpha.ToString());
+                        writer.WriteAttributeString("Red", colourSub1.colourRed.ToString());
+                        writer.WriteAttributeString("Green", colourSub1.colourGreen.ToString());
+                        writer.WriteAttributeString("Blue", colourSub1.colourBlue.ToString());
                         writer.WriteEndElement();
                     }
 
                     writer.WriteStartElement("ColourSub2");
-                    foreach (Structs.ColourSub2 colourSub2 in cell.ColourSub2List) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub2.colourSub2Start).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub2.colourSub2End).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub2.colourSub2Marker).ToString());
+                    foreach (Structs.Colour colourSub2 in cell.colourSub2List) {
+                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub2.colourStart).ToString());
+                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub2.colourEnd).ToString());
+                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub2.colourMarker).ToString());
 
-                        writer.WriteAttributeString("Alpha", colourSub2.colourSub2Alpha.ToString());
-                        writer.WriteAttributeString("Red", colourSub2.colourSub2Red.ToString());
-                        writer.WriteAttributeString("Green", colourSub2.colourSub2Green.ToString());
-                        writer.WriteAttributeString("Blue", colourSub2.colourSub2Blue.ToString());
+                        writer.WriteAttributeString("Alpha", colourSub2.colourAlpha.ToString());
+                        writer.WriteAttributeString("Red", colourSub2.colourRed.ToString());
+                        writer.WriteAttributeString("Green", colourSub2.colourGreen.ToString());
+                        writer.WriteAttributeString("Blue", colourSub2.colourBlue.ToString());
                         writer.WriteEndElement();
                     }
 
-                    //writer.WriteStartElement("Hithere");
-                    
-                    //writer.WriteEndElement();
-
                     while (highlightlocal != null) {
                         foreach (string highlight in highlightlocal) {
-                            if (highlight.Contains(group.GroupName) && highlight.Contains(cell.CellName)) {
+                            if (highlight.Contains(group.groupName) && highlight.Contains(cell.cellName)) {
                                 Common.skipFlag = true;
                                 break;
                             }
@@ -251,19 +243,19 @@ namespace SonicUnleashedFCOConv {
                     }
 
                     if (Common.skipFlag) {
-                        int highlightcount = 0;
-                        foreach (Structs.Highlight highlight in cell.HighlightList) {
-                            writer.WriteStartElement("Highlight" + highlightcount);
-                            writer.WriteAttributeString("Start", Common.EndianSwap(highlight.highlightStart).ToString());
-                            writer.WriteAttributeString("End", Common.EndianSwap(highlight.highlightEnd).ToString());
-                            writer.WriteAttributeString("Marker", Common.EndianSwap(highlight.highlightMarker).ToString());
+                        int workCount = 0;
+                        foreach (Structs.Colour highlight in cell.highlightList) {
+                            writer.WriteStartElement("Highlight" + workCount);
+                            writer.WriteAttributeString("Start", Common.EndianSwap(highlight.colourStart).ToString());
+                            writer.WriteAttributeString("End", Common.EndianSwap(highlight.colourEnd).ToString());
+                            writer.WriteAttributeString("Marker", Common.EndianSwap(highlight.colourMarker).ToString());
 
-                            writer.WriteAttributeString("Alpha", highlight.highlightAlpha.ToString());
-                            writer.WriteAttributeString("Red", highlight.highlightRed.ToString());
-                            writer.WriteAttributeString("Green", highlight.highlightGreen.ToString());
-                            writer.WriteAttributeString("Blue", highlight.highlightBlue.ToString());
+                            writer.WriteAttributeString("Alpha", highlight.colourAlpha.ToString());
+                            writer.WriteAttributeString("Red", highlight.colourRed.ToString());
+                            writer.WriteAttributeString("Green", highlight.colourGreen.ToString());
+                            writer.WriteAttributeString("Blue", highlight.colourBlue.ToString());
                             writer.WriteEndElement();
-                            highlightcount++;
+                            workCount++;
                         }
 
                         Common.skipFlag = false;
@@ -277,13 +269,11 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteEndDocument();
             writer.Close();
-            writer.Dispose();
 
             groups.Clear();
             if (highlightlocal != null) highlightlocal.Clear();
 
             Console.WriteLine("XML written!");
-            return;
         }
     }
 }
