@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Text;
+using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     public static class FTE {

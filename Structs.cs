@@ -1,9 +1,24 @@
-﻿public static class Structs {
-    /*public struct Skip {
-        public int skip2Big { get; set; }
-        public int skip3 { get; set; }
-    }*/
+﻿namespace SUFontTool;
 
+public static class Structs {
+    public struct Group {
+        public string groupName { get; set; }
+        public List<Cell> cellList { get; set; }
+    }
+
+    public struct Cell {
+        public string cellName { get; set; }
+        public string cellMessage { get; set; }
+        public byte[] cellMessageWrite { get; set; }
+        public int messageCharAmount { get; set; }
+        public Colour colourMain { get; set; }
+        public Colour colourSub1 { get; set; }
+        public Colour colourSub2 { get; set; }
+        public string alignment { get; set; }
+        public int highlightCount { get; set; }
+        public List<Colour> highlightList { get; set; }
+    }
+    
     public struct Colour {
         public int colourStart { get; set; }
         public int colourEnd { get; set; }
@@ -13,26 +28,12 @@
         public byte colourGreen { get; set; }
         public byte colourBlue { get; set; }
     }
-
-    public struct Cell {
-        public string cellName { get; set; }
-        //public byte[] CellNameWrite { get; set; }
-        //public int CellNameCharsCount { get; set; }
-        public string cellMessage { get; set; }
-        public byte[] cellMessageWrite { get; set; }
-        public int messageCharAmount { get; set; }
-        public List<Colour> colourMainList { get; set; }
-        public List<Colour> colourSub1List { get; set; }
-        public List<Colour> colourSub2List { get; set; }
-        public int alignment { get; set; }
-        public int highlightCount { get; set; }
-        public List<Colour> highlightList { get; set; }
-    }
-
-    public struct Group {
-        public string groupName { get; set; }
-        //public int GroupNameCharsCount { get; set; }
-        public List<Cell> cellList { get; set; }
+    
+    public enum TextAlign {
+        left = 0,
+        center = 1,
+        right = 2,
+        justified = 3
     }
 
     public struct Texture {

@@ -1,26 +1,31 @@
 using System.Xml;
 using System.Text;
+using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     public static class FCO {
-        public static bool structureError = false;
-        public static long address;
         public static List<Structs.Group> groups = new List<Structs.Group>();
         public static List<string> highlightlocal = new List<string>();
         public static void ReadFCO(string path) {
-            Common.TableAssignment();
+            // Very messy 2nd arg thing, I'll clean this up
+            if (Program.tableArg != null) {
+                Common.fcoTableDir = Program.currentDir + "/tables/";
+                Common.fcoTableName = Program.tableArg;
+                Common.fcoTable = Common.fcoTableDir + Common.fcoTableName + ".json";
+                Translator.iconsTablePath = Common.fcoTableDir + "Icons.json";
+            }
+            else {
+                Common.TableAssignment();
+            }
             if (Common.fcoTable == null) return;
 
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
+            Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");      // Names of Groups and Cells are in UTF-8
             
-            // Names of Groups and Cells are in UTF-8
-            Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");
-
-            long fileHeader = binaryReader.ReadInt64();   // This is always the same
-            if (fileHeader != 67108864) {
-                structureError = true;
-                address = binaryReader.BaseStream.Position;
+            if (binaryReader.ReadInt64() != 67108864) {     // This is always the same
+                Common.structureError = true;
+                Common.address = binaryReader.BaseStream.Position;
                 return;
             }
 
@@ -51,79 +56,46 @@ namespace SonicUnleashedFCOConv {
                     int cellLength = Common.EndianSwap(binaryReader.ReadInt32());
                     byte[] cellMessageBytes = binaryReader.ReadBytes(cellLength * 4);
                     cellData.cellMessage = Translator.HEXtoTXT(BitConverter.ToString(cellMessageBytes).Replace("-", " "));
-
-                    int colourHeader = Common.EndianSwap(binaryReader.ReadInt32());
-                    if (colourHeader != 4) {
-                        structureError = true;
-                        address = binaryReader.BaseStream.Position;
+                    
+                    if (Common.EndianSwap(binaryReader.ReadInt32()) != 4) {
+                        Common.structureError = true;
+                        Common.address = binaryReader.BaseStream.Position;
                         return;
                     }
-
-                    //Colour Data
-                    List<Structs.Colour> ColourMain = new List<Structs.Colour>();
-                    for (int a = 0; a < 1; a++) {
-                        Structs.Colour colourMainData = new Structs.Colour() {
-                            colourStart = binaryReader.ReadInt32(),
-                            colourEnd = binaryReader.ReadInt32(),
-                            colourMarker = binaryReader.ReadInt32(),
-                            colourAlpha = binaryReader.ReadByte(),
-                            colourRed = binaryReader.ReadByte(),
-                            colourGreen = binaryReader.ReadByte(),
-                            colourBlue = binaryReader.ReadByte(),
-                        };
-                        ColourMain.Add(colourMainData);
-                    }
-
-                    //ColourSub1 Data
-                    List<Structs.Colour> ColourSub1 = new List<Structs.Colour>();
-                    for (int a = 0; a < 1; a++) {
-                        Structs.Colour colourSub1Data = new Structs.Colour() {
-                            colourStart = binaryReader.ReadInt32(),
-                            colourEnd = binaryReader.ReadInt32(),
-                            colourMarker = binaryReader.ReadInt32(),
-                            colourAlpha = binaryReader.ReadByte(),
-                            colourRed = binaryReader.ReadByte(),
-                            colourGreen = binaryReader.ReadByte(),
-                            colourBlue = binaryReader.ReadByte(),
-                        };
-                        ColourSub1.Add(colourSub1Data);
-                    }
-
-                    //ColourSub2 Data
-                    List<Structs.Colour> ColourSub2 = new List<Structs.Colour>();
-                    for (int a = 0; a < 1; a++) {
-                        Structs.Colour colourSub2Data = new Structs.Colour() {
-                            colourStart = binaryReader.ReadInt32(),
-                            colourEnd = binaryReader.ReadInt32(),
-                            colourMarker = binaryReader.ReadInt32(),
-                            colourAlpha = binaryReader.ReadByte(),
-                            colourRed = binaryReader.ReadByte(),
-                            colourGreen = binaryReader.ReadByte(),
-                            colourBlue = binaryReader.ReadByte(),
-                        };
-
-                        // int colourExtraStart =   //I'm still unsure what these values do
-                        binaryReader.ReadInt32();
-                        // int colourExtraEnd =
-                        binaryReader.ReadInt32();
-                        binaryReader.ReadInt32();   // This one is a footer value, 0x03 marks the very end of the data
-
-                        ColourSub2.Add(colourSub2Data);
-                    }
-                    cellData.colourMainList = ColourMain;
-                    cellData.colourSub1List = ColourSub1;
-                    cellData.colourSub2List = ColourSub2;
+                    
+                    // Main Text Colour
+                    Structs.Colour colourMain = new Structs.Colour();
+                    Common.ReadFCOColour(binaryReader, ref colourMain);
+                    cellData.colourMain = colourMain;
+                    
+                    // Check what this is
+                    Structs.Colour ColourSub1 = new Structs.Colour();
+                    Common.ReadFCOColour(binaryReader, ref ColourSub1);
+                    cellData.colourSub1 = ColourSub1;
+                    
+                    // Check what this is
+                    Structs.Colour ColourSub2 = new Structs.Colour();
+                    Common.ReadFCOColour(binaryReader, ref ColourSub2);
+                    cellData.colourSub2 = ColourSub2;
+                    
+                    
+                    binaryReader.ReadInt32();   // I'm still unsure what these values do     // int colourExtraStart = 
+                    binaryReader.ReadInt32();   // int colourExtraEnd =
+                    binaryReader.ReadInt32();   // This 0x03 marks the very end of the data
 
                     // Separator
-                    cellData.alignment = Common.EndianSwap(binaryReader.ReadInt32());
-                    if (cellData.alignment > 3) {
-                        structureError = true;
-                        address = binaryReader.BaseStream.Position;
+                    int alignment = Common.EndianSwap(binaryReader.ReadInt32());
+                    if (alignment > 3) {
+                        Common.structureError = true;
+                        Common.address = binaryReader.BaseStream.Position;
                         return;
                     }
+                    var enumDisplayStatus = (Structs.TextAlign)alignment;
+                    cellData.alignment = enumDisplayStatus.ToString();
+                    //Console.WriteLine(cellData.alignment);
 
                     // Separator
-                    cellData.highlightCount = Common.EndianSwap(binaryReader.ReadInt32());   // If this is anything but 0, it's the highlight count in the cell
+                    cellData.highlightCount = Common.EndianSwap(binaryReader.ReadInt32());  // If this is anything but 0, it's the highlight count in the cell
                     if (cellData.highlightCount >= 1) {
                         highlightlocal.Add(groupData.groupName + ": " + cellData.cellName);
                     }
@@ -131,33 +103,25 @@ namespace SonicUnleashedFCOConv {
                     // Highlights
                     List<Structs.Colour> Highlights = new List<Structs.Colour>();
                     for (int h = 0; h < cellData.highlightCount; h++) {
-                        Structs.Colour hightlightData = new Structs.Colour() {
-                            colourStart = binaryReader.ReadInt32(),
-                            colourEnd = binaryReader.ReadInt32(),
-                            colourMarker = binaryReader.ReadInt32(),
-                            colourAlpha = binaryReader.ReadByte(),
-                            colourRed = binaryReader.ReadByte(),
-                            colourGreen = binaryReader.ReadByte(),
-                            colourBlue = binaryReader.ReadByte(),
-                        };
-
+                        Structs.Colour hightlightData = new Structs.Colour();
+                        Common.ReadFCOColour(binaryReader, ref hightlightData);
                         Highlights.Add(hightlightData);
                         Common.skipFlag = true;
                     }
 
                     cellData.highlightList = Highlights;
 
-                    // Back to Separator
-                    binaryReader.ReadInt32();   // Yet to find out what this really does..
+                    // End of Cell
+                    binaryReader.ReadInt32();   // Yet to find out what this really does mean..
 
                     Cells.Add(cellData);
-                    /*  This will add together the following into the Struct:
+                    /*  This will add together the following into the Cell Struct:
                         Cell Name, Message, Colour0, Colour1, Colour2 and (possibly) Highlights */
                     //Console.WriteLine("Cell Read!");
                 }
 
-                groupData.cellList = Cells;
-                groups.Add(groupData);
+                groupData.cellList = Cells;     // This will put every Cell into a Group
+                groups.Add(groupData);          // This adds all the Groups together
             }
 
             binaryReader.Close();
@@ -174,8 +138,7 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FCO");
-            // This is used later once the XML is used to convert the data back into an FCO format
-            writer.WriteAttributeString("Table", Common.fcoTableName);
+            writer.WriteAttributeString("Table", Common.fcoTableName);      // This is used later once the XML is used to convert the data back into an FCO format
             
             writer.WriteStartElement("Groups");
             foreach (Structs.Group group in groups) {
@@ -184,53 +147,24 @@ namespace SonicUnleashedFCOConv {
 
                 foreach (Structs.Cell cell in group.cellList) {
                     writer.WriteStartElement("Cell");
-                    // These parameters are part of the "Cell" Element Header
-                    writer.WriteAttributeString("Name", cell.cellName);
+                    writer.WriteAttributeString("Name", cell.cellName);                     // These parameters are part of the "Cell" Element Header
                     writer.WriteAttributeString("Alignment", cell.alignment.ToString());
-
-                    // The following Elements are all within the "Cell" Element
+                                                                                            // The following Elements are all within the "Cell" Element
                     writer.WriteStartElement("Message");
                     writer.WriteAttributeString("MessageData", cell.cellMessage);
                     writer.WriteEndElement();
 
                     writer.WriteStartElement("ColourMain");
-                    foreach (Structs.Colour colourMain in cell.colourMainList) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourMain.colourStart).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourMain.colourEnd).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourMain.colourMarker).ToString());
-
-                        writer.WriteAttributeString("Alpha", colourMain.colourAlpha.ToString());
-                        writer.WriteAttributeString("Red", colourMain.colourRed.ToString());
-                        writer.WriteAttributeString("Green", colourMain.colourGreen.ToString());
-                        writer.WriteAttributeString("Blue", colourMain.colourBlue.ToString());
-                        writer.WriteEndElement();
-                    }
-
+                    Common.WriteFCOColour(writer, cell.colourMain);
+                    writer.WriteEndElement();
+                    
                     writer.WriteStartElement("ColourSub1");
-                    foreach (Structs.Colour colourSub1 in cell.colourSub1List) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub1.colourStart).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub1.colourEnd).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub1.colourMarker).ToString());
-
-                        writer.WriteAttributeString("Alpha", colourSub1.colourAlpha.ToString());
-                        writer.WriteAttributeString("Red", colourSub1.colourRed.ToString());
-                        writer.WriteAttributeString("Green", colourSub1.colourGreen.ToString());
-                        writer.WriteAttributeString("Blue", colourSub1.colourBlue.ToString());
-                        writer.WriteEndElement();
-                    }
-
+                    Common.WriteFCOColour(writer, cell.colourSub1);
+                    writer.WriteEndElement();
+                    
                     writer.WriteStartElement("ColourSub2");
-                    foreach (Structs.Colour colourSub2 in cell.colourSub2List) {
-                        writer.WriteAttributeString("Start", Common.EndianSwap(colourSub2.colourStart).ToString());
-                        writer.WriteAttributeString("End", Common.EndianSwap(colourSub2.colourEnd).ToString());
-                        writer.WriteAttributeString("Marker", Common.EndianSwap(colourSub2.colourMarker).ToString());
-
-                        writer.WriteAttributeString("Alpha", colourSub2.colourAlpha.ToString());
-                        writer.WriteAttributeString("Red", colourSub2.colourRed.ToString());
-                        writer.WriteAttributeString("Green", colourSub2.colourGreen.ToString());
-                        writer.WriteAttributeString("Blue", colourSub2.colourBlue.ToString());
-                        writer.WriteEndElement();
-                    }
+                    Common.WriteFCOColour(writer, cell.colourSub2);
+                    writer.WriteEndElement();
 
                     while (highlightlocal != null) {
                         foreach (string highlight in highlightlocal) {
@@ -246,14 +180,7 @@ namespace SonicUnleashedFCOConv {
                         int workCount = 0;
                         foreach (Structs.Colour highlight in cell.highlightList) {
                             writer.WriteStartElement("Highlight" + workCount);
-                            writer.WriteAttributeString("Start", Common.EndianSwap(highlight.colourStart).ToString());
-                            writer.WriteAttributeString("End", Common.EndianSwap(highlight.colourEnd).ToString());
-                            writer.WriteAttributeString("Marker", Common.EndianSwap(highlight.colourMarker).ToString());
-
-                            writer.WriteAttributeString("Alpha", highlight.colourAlpha.ToString());
-                            writer.WriteAttributeString("Red", highlight.colourRed.ToString());
-                            writer.WriteAttributeString("Green", highlight.colourGreen.ToString());
-                            writer.WriteAttributeString("Blue", highlight.colourBlue.ToString());
+                            Common.WriteFCOColour(writer, highlight);
                             writer.WriteEndElement();
                             workCount++;
                         }

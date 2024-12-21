@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     public static class DDS {

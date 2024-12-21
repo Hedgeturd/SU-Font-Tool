@@ -1,10 +1,12 @@
 using System.Text;
 using System.Xml;
+using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     class Common {
         public static string? fcoTable, fcoTableDir, fcoTableName;
-        public static bool skipFlag = false, noLetter = false;
+        public static bool skipFlag = false, noLetter = false, structureError = false;
+        public static long address;
 
         // Common Functions
         public static void TempCheck(int mode) {    // This is no longer needed but will be kept for future use            
@@ -51,20 +53,20 @@ namespace SonicUnleashedFCOConv {
                     Console.WriteLine("FCO writing aborted!");
                 }
 
-                Console.WriteLine("Please check your temp file!");
+                Console.WriteLine("ERROR: Please check your temp file!");
                 Console.WriteLine("\nPress Enter to Exit.");
                 Console.Read();
                 return true;
             }
-            if (FCO.structureError) {
-                Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FCO.address).ToString("X")  + ".");
+            if (structureError) {
+                Console.WriteLine("\nERROR: Exception occurred during parsing at: 0x" + unchecked((int)address).ToString("X")  + ".");
                 Console.WriteLine("There is a structural abnormality within the FCO file!");
                 Console.WriteLine("\nPress Enter to Exit.");
                 Console.Read();
                 return true;
             }
             if (FTE.structureError) {
-                Console.WriteLine("\nException occurred during parsing at: 0x" + unchecked((int)FTE.address).ToString("X")  + ".");
+                Console.WriteLine("\nERROR: Exception occurred during parsing at: 0x" + unchecked((int)FTE.address).ToString("X")  + ".");
                 Console.WriteLine("There is a structural abnormality within the FTE file!");
                 Console.WriteLine("\nPress Enter to Exit.");
                 Console.Read();
@@ -100,6 +102,7 @@ namespace SonicUnleashedFCOConv {
                 return;
             }
         }
+        
         
         // FCO and FTE Functions
         public static void TableAssignment() {      // This block of code is probably the worst thing I have ever made :)
@@ -176,6 +179,27 @@ namespace SonicUnleashedFCOConv {
             }
         }
 
+        public static void ReadFCOColour(BinaryReader binaryReader, ref Structs.Colour colourType) {
+            colourType.colourStart = binaryReader.ReadInt32();
+            colourType.colourEnd = binaryReader.ReadInt32();
+            colourType.colourMarker = binaryReader.ReadInt32();
+            colourType.colourAlpha = binaryReader.ReadByte();
+            colourType.colourRed = binaryReader.ReadByte();
+            colourType.colourGreen = binaryReader.ReadByte();
+            colourType.colourBlue = binaryReader.ReadByte();
+        }
+
+        public static void WriteFCOColour(XmlWriter writer, Structs.Colour colourType) {
+            writer.WriteAttributeString("Start", Common.EndianSwap(colourType.colourStart).ToString());
+            writer.WriteAttributeString("End", Common.EndianSwap(colourType.colourEnd).ToString());
+            writer.WriteAttributeString("Marker", Common.EndianSwap(colourType.colourMarker).ToString());
+
+            writer.WriteAttributeString("Alpha", colourType.colourAlpha.ToString());
+            writer.WriteAttributeString("Red", colourType.colourRed.ToString());
+            writer.WriteAttributeString("Green", colourType.colourGreen.ToString());
+            writer.WriteAttributeString("Blue", colourType.colourBlue.ToString());
+        }
+
         // XML Functions
         public static byte[] StringToByteArray(string hex) {
             int numberChars = hex.Length;
@@ -187,14 +211,44 @@ namespace SonicUnleashedFCOConv {
             return bytes;
         }
 
+        public static void ReadXMLColour(ref Structs.Colour colourType, XmlElement colourNode)  {
+            try {
+                colourType.colourStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!);
+                colourType.colourEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!);
+                colourType.colourMarker = int.Parse(colourNode.Attributes.GetNamedItem("Marker")!.Value!);
+                colourType.colourAlpha = byte.Parse(colourNode.Attributes.GetNamedItem("Alpha")!.Value!);
+                colourType.colourRed = byte.Parse(colourNode.Attributes.GetNamedItem("Red")!.Value!);
+                colourType.colourGreen = byte.Parse(colourNode.Attributes.GetNamedItem("Green")!.Value!);
+                colourType.colourBlue = byte.Parse(colourNode.Attributes.GetNamedItem("Blue")!.Value!);
+            }
+            catch (FormatException e) {
+                //Console.WriteLine(e);
+                var groupName = colourNode.ParentNode.ParentNode.Attributes.GetNamedItem("Name")!.Value!;
+                var cellName = colourNode.ParentNode.Attributes.GetNamedItem("Name")!.Value!;
+                Console.WriteLine("ERROR: Check your Colour Values in Group: " + groupName + ", Cell: " + cellName );
+                Console.ReadKey();
+                throw;
+            }
+        }
+        
+        public static void WriteXMLColour(BinaryWriter binaryWriter, Structs.Colour colourType) {
+            binaryWriter.Write(Common.EndianSwap(colourType.colourStart));
+            binaryWriter.Write(Common.EndianSwap(colourType.colourEnd));
+            binaryWriter.Write(Common.EndianSwap(colourType.colourMarker));
+            binaryWriter.Write(colourType.colourAlpha);
+            binaryWriter.Write(colourType.colourRed);
+            binaryWriter.Write(colourType.colourGreen);
+            binaryWriter.Write(colourType.colourBlue);
+        }
+
         public static string PadString(string input, char fillerChar)
         {
             int padding = (4 - input.Length % 4) % 4;
             return input.PadRight(input.Length + padding, fillerChar);
         }
 
-        public static void WriteStringWithoutLength(BinaryWriter writer, string value)
-        {
+        public static void ConvString(BinaryWriter writer, string value)  {
+            // Turning string into Byte Array so the data can be written properly
             byte[] utf8Bytes = Encoding.UTF8.GetBytes(value);
             writer.Write(utf8Bytes);
         }
