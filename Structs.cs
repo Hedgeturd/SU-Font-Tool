@@ -1,7 +1,6 @@
 ﻿namespace SUFontTool;
 
 public static class Structs {
-    // hi
     public struct Group {
         public string groupName { get; set; }
         public List<Cell> cellList { get; set; }
