@@ -9,6 +9,17 @@ A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files int
 `SonicUnleashedFCOConv <Path to .fte/.fco/.xml>`\
 You can also simply drag and drop supported file formats onto the executable.
 
+## To Do
+- (Ongoing) Update Translation JSONs for new system
+- (Try) Add DDS Support
+
+## Thanks
+Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
+Plus a HUGE thank you to [NextinHKRY](https://github.com/NextinMono) for all of your coding help!!
+
+## Requirements
+If the tool does nothing when used, you may need to install the [.NET Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=8.0) package that the tool needs to work
+
 ***
 
 ## Formats
@@ -57,16 +68,3 @@ When converted to an XML, you can view and edit the different fields such as:
   </Groups>
 </FCO>
 ```
-
-***
-
-## To Do
-- (Ongoing) Update Translation JSONs for new system
-- (Try) Add DDS Support
-
-## Thanks
-Big thank you to [TheExentist151](https://github.com/TheExentist151) for letting me recycle some of the code from [SonicColorsXTBConv](https://github.com/TheExentist151/SonicColorsXTBConv)<br>
-Plus a HUGE thank you to [NextinHKRY](https://github.com/NextinMono) for all of your coding help!!
-
-## Requirements
-If the tool does nothing when used, you may need to install the [.NET Runtime](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=8.0) package that the tool needs to work
