@@ -181,29 +181,27 @@ namespace SonicUnleashedFCOConv {
                     
                     Structs.TextAlign alignConv = (Structs.TextAlign)Enum.Parse(typeof(Structs.TextAlign), standardArea.alignment);
                     binaryWriter.Write(Common.EndianSwap((int)alignConv));
-
+                    
                     if (standardArea.highlightList != null) {
                         binaryWriter.Write(Common.EndianSwap(standardArea.highlightList.Count));
 
                         for (int h = 0; h < standardArea.highlightList.Count; h++) {
                             var highlights = standardArea.highlightList[h];
                             Common.WriteXMLColour(binaryWriter, highlights);
-                            Common.skipFlag = true;
                         }
                     }
 
-                    if (Common.skipFlag) {
+                    if (standardArea.highlightList != null) {
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
                         //Console.WriteLine("Highlight Data Written!");
-                        Common.skipFlag = false;
                     }
                     else {
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
-                        //Console.WriteLine("Cell Data Written!");
                     }
+                    
+                    //Console.WriteLine("Cell Data Written!");
                 }
-
                 //Console.WriteLine("Group Data Written!");
             }
 
