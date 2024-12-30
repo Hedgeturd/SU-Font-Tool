@@ -4,70 +4,66 @@ using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     public static class FTE {
+        public static bool structureError = false;
+        public static long address;
         public static List<Structs.Texture> textures = new List<Structs.Texture>();
         public static List<Structs.Character> characters = new List<Structs.Character>();
         
         public static void ReadFTE(string path) {
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             BinaryReader binaryReader = new BinaryReader(fileStream);
+            Encoding Unicode = Encoding.GetEncoding("Unicode");
             Encoding UTF8Encoding = Encoding.GetEncoding("UTF-8");
 
-            try {
-                // Start Parse
-                binaryReader.ReadInt64();   // This is always the same
-
-                // Textures
-                int textureCount = Common.EndianSwap(binaryReader.ReadInt32());
-                
-                for(int i = 0; i < textureCount; i++) {
-                    Structs.Texture textureData = new Structs.Texture();
-
-                    // Texture Name
-                    textureData.textureName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
-                    Common.SkipPadding(binaryReader);
-
-                    textureData.textureSizeX = Common.EndianSwap(binaryReader.ReadInt32());
-                    textureData.textureSizeY = Common.EndianSwap(binaryReader.ReadInt32());
-
-                    textures.Add(textureData);
-                }
-
-                // Characters
-                int charaCount = Common.EndianSwap(binaryReader.ReadInt32());
-
-                int CurrentID = 100;
-                bool IndexChange = false;
-
-                for(int i = 0; i < charaCount; i++) {
-                    Structs.Character charaData = new Structs.Character();
-                    
-                    charaData.textureIndex = Common.EndianSwap(binaryReader.ReadInt32());
-
-                    if (charaData.textureIndex == 2 && IndexChange == false) {
-                        CurrentID += 100;
-                        IndexChange = true;
-                    }
-
-                    charaData.convID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
-
-                    charaData.charPoint1X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint1Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint2X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint2Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
-
-                    characters.Add(charaData);
-                    CurrentID++;
-                }
+            // Starting 8 Bytes
+            long header = binaryReader.ReadInt64();   // This is always the same
+            if (header != 67108864) {
+                structureError = true;
+                address = binaryReader.BaseStream.Position;
+                return;
             }
-            catch (EndOfStreamException e) {
-                Console.WriteLine(e);
+
+            // Textures
+            int textureCount = Common.EndianSwap(binaryReader.ReadInt32());
+            
+            for(int i = 0; i < textureCount; i++) {
+                Structs.Texture textureData = new Structs.Texture();
+
+                // Texture Name
+                textureData.textureName = UTF8Encoding.GetString(binaryReader.ReadBytes(Common.EndianSwap(binaryReader.ReadInt32())));
+                Common.SkipPadding(binaryReader);
+
+                textureData.textureSizeX = Common.EndianSwap(binaryReader.ReadInt32());
+                textureData.textureSizeY = Common.EndianSwap(binaryReader.ReadInt32());
+
+                textures.Add(textureData);
+            }
+
+            // Characters
+            int charaCount = Common.EndianSwap(binaryReader.ReadInt32());
+
+            int CurrentID = 100;
+            bool IndexChange = false;
+
+            for(int i = 0; i < charaCount; i++) {
+                Structs.Character charaData = new Structs.Character();
                 
-                Console.WriteLine("\nERROR: Exception occurred during parsing at: 0x" + unchecked((int)binaryReader.BaseStream.Position).ToString("X")  + ".");
-                Console.WriteLine("There is a structural abnormality within the FTE file!");
-                Console.WriteLine("\nPress Enter to Exit.");
-                Console.Read();
-                
-                throw;
+                charaData.textureIndex = Common.EndianSwap(binaryReader.ReadInt32());
+
+                if (charaData.textureIndex == 2 && IndexChange == false) {
+                    CurrentID += 100;
+                    IndexChange = true;
+                }
+
+                charaData.convID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
+
+                charaData.charPoint1X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint1Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint2X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                charaData.charPoint2Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+
+                characters.Add(charaData);
+                CurrentID++;
             }
 			
             binaryReader.Close();
