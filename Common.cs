@@ -5,8 +5,8 @@ using SUFontTool;
 namespace SonicUnleashedFCOConv {
     class Common {
         public static string? fcoTable, fcoTableDir, fcoTableName;
-
-        public static bool noLetter = false;
+        public static bool skipFlag = false, noLetter = false, structureError = false;
+        public static long address;
 
         // Common Functions
         public static void TempCheck(int mode) {    // This is no longer needed but will be kept for future use            
@@ -36,26 +36,44 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static bool ErrorCheck() {
-            TempCheck(1);
-            StreamWriter sw = new StreamWriter("temp.txt", append: true);
-            for (int i = 0; i < Translator.missinglist.Count; i++) {
-                sw.WriteLine(Translator.missinglist[i]);
-            }                
-            sw.Close();
+            if (Common.noLetter) {
+                TempCheck(1);
+                StreamWriter sw = new StreamWriter("temp.txt", append: true);
+                for (int i = 0; i < Translator.missinglist.Count; i++) {
+                    sw.WriteLine(Translator.missinglist[i]);
+                }                
+                sw.Close();
 
-            if (Path.GetExtension(Program.fileName) == ".fco") {
-                Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
-                Console.WriteLine("XML writing aborted!");
+                if (Path.GetExtension(Program.fileName) == ".fco") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
+                    Console.WriteLine("XML writing aborted!");
+                }
+                if (Path.GetExtension(Program.fileName) == ".xml") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
+                    Console.WriteLine("FCO writing aborted!");
+                }
+
+                Console.WriteLine("ERROR: Please check your temp file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
+                return true;
             }
-            if (Path.GetExtension(Program.fileName) == ".xml") {
-                Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
-                Console.WriteLine("FCO writing aborted!");
+            if (structureError) {
+                Console.WriteLine("\nERROR: Exception occurred during parsing at: 0x" + unchecked((int)address).ToString("X")  + ".");
+                Console.WriteLine("There is a structural abnormality within the FCO file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
+                return true;
+            }
+            if (FTE.structureError) {
+                Console.WriteLine("\nERROR: Exception occurred during parsing at: 0x" + unchecked((int)FTE.address).ToString("X")  + ".");
+                Console.WriteLine("There is a structural abnormality within the FTE file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
+                return true;
             }
 
-            Console.WriteLine("ERROR: Please check your temp file!");
-            Console.WriteLine("\nPress Enter to Exit.");
-            Console.Read();
-            return true;
+            return false;
         }
 
         public static void ExtractCheck() {
@@ -162,9 +180,9 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static void ReadFCOColour(BinaryReader binaryReader, ref Structs.Colour colourType) {
-            colourType.colourStart = EndianSwap(binaryReader.ReadInt32());
-            colourType.colourEnd = EndianSwap(binaryReader.ReadInt32());
-            colourType.colourMarker = EndianSwap(binaryReader.ReadInt32());
+            colourType.colourStart = binaryReader.ReadInt32();
+            colourType.colourEnd = binaryReader.ReadInt32();
+            colourType.colourMarker = binaryReader.ReadInt32();
             colourType.colourAlpha = binaryReader.ReadByte();
             colourType.colourRed = binaryReader.ReadByte();
             colourType.colourGreen = binaryReader.ReadByte();
@@ -172,9 +190,9 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static void WriteFCOColour(XmlWriter writer, Structs.Colour colourType) {
-            writer.WriteAttributeString("Start", colourType.colourStart.ToString());
-            writer.WriteAttributeString("End", colourType.colourEnd.ToString());
-            writer.WriteAttributeString("Marker", colourType.colourMarker.ToString());
+            writer.WriteAttributeString("Start", Common.EndianSwap(colourType.colourStart).ToString());
+            writer.WriteAttributeString("End", Common.EndianSwap(colourType.colourEnd).ToString());
+            writer.WriteAttributeString("Marker", Common.EndianSwap(colourType.colourMarker).ToString());
 
             writer.WriteAttributeString("Alpha", colourType.colourAlpha.ToString());
             writer.WriteAttributeString("Red", colourType.colourRed.ToString());
