@@ -5,7 +5,7 @@ using SUFontTool;
 namespace SonicUnleashedFCOConv {
     class Common {
         public static string? fcoTable, fcoTableDir, fcoTableName;
-        public static bool noLetter = false, skipFlag = false;
+        public static bool noLetter = false;
 
         // Common Functions
         public static void TempCheck(int mode) {    // This is no longer needed but will be kept for future use            
@@ -35,26 +35,34 @@ namespace SonicUnleashedFCOConv {
         }
 
         public static bool ErrorCheck() {
-            TempCheck(1);
-            StreamWriter sw = new StreamWriter("temp.txt", append: true);
-            for (int i = 0; i < Translator.missinglist.Count; i++) {
-                sw.WriteLine(Translator.missinglist[i]);
-            }                
-            sw.Close();
+            if (Translator.missinglist.Count > 0) {
+                TempCheck(1);
+            
+                StreamWriter sw = new StreamWriter("temp.txt", append: true);
+                for (int i = 0; i < Translator.missinglist.Count; i++) {
+                    sw.WriteLine(Translator.missinglist[i]);
+                }                
+                sw.Close();
 
-            if (Path.GetExtension(Program.fileName) == ".fco") {
-                Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
-                Console.WriteLine("XML writing aborted!");
-            }
-            if (Path.GetExtension(Program.fileName) == ".xml") {
-                Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
-                Console.WriteLine("FCO writing aborted!");
-            }
+                if (Path.GetExtension(Program.fileName) == ".fco") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
+                    Console.WriteLine("XML writing aborted!");
+                }
+                if (Path.GetExtension(Program.fileName) == ".xml") {
+                    Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
+                    Console.WriteLine("FCO writing aborted!");
+                }
 
-            Console.WriteLine("ERROR: Please check your temp file!");
-            Console.WriteLine("\nPress Enter to Exit.");
-            Console.Read();
-            return true;
+                Console.WriteLine("ERROR: Please check your temp file!");
+                Console.WriteLine("\nPress Enter to Exit.");
+                Console.Read();
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public static void ExtractCheck() {
