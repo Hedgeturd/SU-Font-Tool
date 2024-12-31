@@ -3,7 +3,7 @@ using System.Text;
 using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
-    public static class FCO {
+    public static class FCO { 
         static List<Structs.Group> groups = new List<Structs.Group>();
         public static void ReadFCO(string path) {
             // Very messy 2nd arg thing, I'll clean this up
