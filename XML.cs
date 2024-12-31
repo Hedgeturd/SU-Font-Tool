@@ -1,13 +1,12 @@
 using System.Xml;
-using System.Text;
 using SUFontTool;
 
 namespace SonicUnleashedFCOConv {
     public static class XML {
         public static string tableNoName;
         public static int texCount = 0, charaCount = 0, spriteIndex = 0;
-        public static bool returnEarly = false, FCO = false, FTE = false;
-        public static List<Structs.Group> groups = new List<Structs.Group>();
+        public static bool FCO = false;
+        static List<Structs.Group> groups = new List<Structs.Group>();
         public static List<Structs.Texture> textures = new List<Structs.Texture>();
         public static List<Structs.Character> characters = new List<Structs.Character>();
         public static void ReadXML(string path) {
@@ -18,7 +17,7 @@ namespace SonicUnleashedFCOConv {
             Common.RemoveComments(xDoc);
             XmlElement? xRoot = xDoc.DocumentElement;
 
-            if (xRoot != null && xRoot.Name == "FCO") {
+            if (xRoot is { Name: "FCO" }) {
                 tableNoName = Program.currentDir + "/tables/" + (xRoot.Attributes.GetNamedItem("Table")!.Value!);
                 Common.fcoTable = tableNoName + ".json";
                 Translator.iconsTablePath = "tables/Icons.json";
@@ -27,16 +26,17 @@ namespace SonicUnleashedFCOConv {
                     if (node.Name == "Groups") {
                         foreach (XmlElement groupNode in node.ChildNodes) {
                             Structs.Group group = new Structs.Group();
-
                             group.groupName = groupNode.Attributes.GetNamedItem("Name")!.Value!;    // Group's Name
 
                             List<Structs.Cell> cells = new List<Structs.Cell>();
                             foreach (XmlElement cellNode in groupNode.ChildNodes) {
                                 if (cellNode.Name == "Cell") {
-                                    Structs.Cell cell = new Structs.Cell();
-                                    cell.cellName = cellNode.Attributes.GetNamedItem("Name")!.Value!;   // Cell's Name
-                                    
-                                    cell.alignment = cellNode.Attributes.GetNamedItem("Alignment")!.Value!.ToLower();
+                                    Structs.Cell cell = new Structs.Cell
+                                    {
+                                        cellName = cellNode.Attributes.GetNamedItem("Name")!.Value!, // Cell's Name
+                                        alignment = cellNode.Attributes.GetNamedItem("Alignment")!.Value!.ToLower()
+                                    };
+
                                     if (Enum.IsDefined(typeof(Structs.TextAlign), cell.alignment) == false) {
                                         cell.alignment = "Left";
                                     }
@@ -53,7 +53,6 @@ namespace SonicUnleashedFCOConv {
 
                                         byte[] messageByteArray = Common.StringToByteArray(hexString);
                                         messageByteArray = Common.StringToByteArray(hexString);
-                                        //int numberOfBytes = hexString.Length;
                                         cell.messageCharAmount = hexString.Length / 8;
                                         cell.cellMessageWrite = messageByteArray;
                                     }
@@ -76,7 +75,7 @@ namespace SonicUnleashedFCOConv {
                                         cell.colourSub2 = colourSub2;
                                     }
 
-                                    List<Structs.Colour> highlights = new List<Structs.Colour>();     // Highlight
+                                    List<Structs.Colour> highlights = new List<Structs.Colour>();
                                     int workCount = 0;
                                     foreach (XmlElement highlightNode in cellNode.ChildNodes) {
                                         if (highlightNode.Name == "Highlight" + workCount) {
@@ -100,8 +99,7 @@ namespace SonicUnleashedFCOConv {
                 Console.WriteLine("XML read!");
                 FCO = true;
             }
-
-            if (xRoot != null && xRoot.Name == "FTE") {
+            if (xRoot is { Name: "FTE" }) {
                 foreach (XmlElement node in xRoot) {
                     if (node.Name == "Textures") { 
                         foreach (XmlElement textureNode in node.ChildNodes) {
@@ -134,7 +132,6 @@ namespace SonicUnleashedFCOConv {
                 }
 
                 Console.WriteLine("XML read!");
-                FTE = true;
             }
         }
 
@@ -165,7 +162,6 @@ namespace SonicUnleashedFCOConv {
                     //Message Data
                     binaryWriter.Write(Common.EndianSwap(standardArea.messageCharAmount));
                     binaryWriter.Write(standardArea.cellMessageWrite);
-                    //Console.WriteLine("Message Data Written!");
 
                     // Colour Start
                     binaryWriter.Write(Common.EndianSwap(0x00000004));
@@ -184,7 +180,6 @@ namespace SonicUnleashedFCOConv {
                     
                     if (standardArea.highlightList != null) {
                         binaryWriter.Write(Common.EndianSwap(standardArea.highlightList.Count));
-
                         for (int h = 0; h < standardArea.highlightList.Count; h++) {
                             var highlights = standardArea.highlightList[h];
                             Common.WriteXMLColour(binaryWriter, highlights);
@@ -193,16 +188,12 @@ namespace SonicUnleashedFCOConv {
 
                     if (standardArea.highlightList != null) {
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
-                        //Console.WriteLine("Highlight Data Written!");
                     }
                     else {
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
                         binaryWriter.Write(Common.EndianSwap(0x00000000));
                     }
-                    
-                    //Console.WriteLine("Cell Data Written!");
                 }
-                //Console.WriteLine("Group Data Written!");
             }
 
             binaryWriter.Close();
