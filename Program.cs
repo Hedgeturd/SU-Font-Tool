@@ -29,7 +29,6 @@
                     if (file.EndsWith(".fte")) {
                         FTE.ReadFTE(args[0]);
                         FTE.WriteXML(args[0]);
-                        Common.ExtractCheck();
                     }
                     if (file.EndsWith(".fco")) {
                         FCO.ReadFCO(args[0]);
@@ -37,13 +36,15 @@
                     }
                     if (file.EndsWith(".xml")) {
                         XML.ReadXML(args[0]);
-                        if (XML.FTE) {
-                            if (Common.ErrorCheck() == false) XML.WriteFTE(args[0]);
-                            Common.ExtractCheck();
-                        }
+                        
                         if (XML.FCO) {
                             if (Common.ErrorCheck() == false) XML.WriteFCO(args[0]);
                         }
+                        else {
+                            if (Common.ErrorCheck() == false) XML.WriteFTE(args[0]);
+                            Common.ExtractCheck();
+                        }
+                        
                     }
                 }
                 else {
