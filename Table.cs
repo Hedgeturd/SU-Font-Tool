@@ -28,8 +28,8 @@ namespace SonicUnleashedFCOConv {
             }
 
             // Convert the list to JSON and write to a file
-            string json = JsonSerializer.Serialize(conversionTable, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("conversionTable.json", json);
+            string tableData = JsonSerializer.Serialize(conversionTable, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("conversionTable.json", tableData);
 
             Console.WriteLine("JSON file created successfully.");
         }
