@@ -68,13 +68,11 @@ namespace SonicUnleashedFCOConv {
         public static void ExtractCheck() {
             Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
             string choice = Console.ReadLine();
-            if (choice.ToLower() != "y") {
-                return;
-            }
+            if (choice.ToLower() != "y") return;
             
-            if (XML.FTE != true) {
+            /*if (XML.FTE != true) {
                 XML.ReadXML(Program.fileDir + "\\" + Program.fileName);
-            }
+            }*/
 
             DDS.Process();
             Table.WriteJSON();
@@ -200,7 +198,7 @@ namespace SonicUnleashedFCOConv {
             return bytes;
         }
 
-        public static void ReadXMLColour(ref Structs.Colour colourType, XmlElement colourNode)  {
+        public static void ReadXMLColour(ref Structs.Colour colourType, XmlElement? colourNode)  {
             try {
                 colourType.colourStart = int.Parse(colourNode.Attributes.GetNamedItem("Start")!.Value!);
                 colourType.colourEnd = int.Parse(colourNode.Attributes.GetNamedItem("End")!.Value!);
