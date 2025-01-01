@@ -273,7 +273,7 @@ namespace SonicUnleashedFCOConv {
                     }
 
                     return searchResult;
-                } //
+                }
 
                 return searchResult;
             }
