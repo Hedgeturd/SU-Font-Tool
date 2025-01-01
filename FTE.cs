@@ -49,11 +49,14 @@ namespace SonicUnleashedFCOConv {
                     }
 
                     charaData.convID = CurrentID.ToString("X8").Insert(2, " ").Insert(5, " ").Insert(8, " ");
+                    
+                    var TexSizeX = textures[charaData.textureIndex].textureSizeX;
+                    var TexSizeY = textures[charaData.textureIndex].textureSizeY;
 
-                    charaData.charPoint1X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint1Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint2X = textures[charaData.textureIndex].textureSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
-                    charaData.charPoint2Y = textures[charaData.textureIndex].textureSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                    charaData.charPoint1X = TexSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                    charaData.charPoint1Y = TexSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                    charaData.charPoint2X = TexSizeX * Common.EndianSwapFloat(binaryReader.ReadSingle());
+                    charaData.charPoint2Y = TexSizeY * Common.EndianSwapFloat(binaryReader.ReadSingle());
 
                     characters.Add(charaData);
                     CurrentID++;
