@@ -264,7 +264,7 @@ namespace SonicUnleashedFCOConv {
                     fontSizeFound = false;
                     return searchResult;
                 }
-                /* else {
+                 else {
                     if (searchResult == "?MISSING") {
                         Common.noLetter = true;
                         iconCheck = false;
@@ -273,7 +273,7 @@ namespace SonicUnleashedFCOConv {
                     }
 
                     return searchResult;
-                } */
+                }
 
                 return searchResult;
             }
