@@ -44,14 +44,28 @@ namespace SonicUnleashedFCOConv {
                 }                
                 sw.Close();
 
-                if (Path.GetExtension(Program.fileName) == ".fco") {
+                switch (Path.GetExtension(Program.fileName)) {
+                    case ".fco":
+                        Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
+                        Console.WriteLine("XML writing aborted!");
+                        break;
+                    case ".xml":
+                        Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
+                        Console.WriteLine("FCO writing aborted!");
+                        break;
+                    default:
+                        Console.WriteLine("What did you do to me..");
+                        break;
+                }
+
+                /*if (Path.GetExtension(Program.fileName) == ".fco") {
                     Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
                     Console.WriteLine("XML writing aborted!");
                 }
                 if (Path.GetExtension(Program.fileName) == ".xml") {
                     Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
                     Console.WriteLine("FCO writing aborted!");
-                }
+                }*/
 
                 Console.WriteLine("ERROR: Please check your temp file!");
                 Console.WriteLine("\nPress Enter to Exit.");
@@ -99,7 +113,27 @@ namespace SonicUnleashedFCOConv {
 
             string? userInput = Console.ReadLine();
 
-            if (userInput.ToLower() == "test") {
+            switch (userInput.ToLower()) {
+                case "1":
+                    IndexCheck(userInput, location.Length);
+                    fcoTableName += location[Convert.ToInt32(userInput) - 1];
+                    Translator.iconsTablePath = fcoTableDir + "Icons.json";
+                    break;
+                case "2":
+                    IndexCheck(userInput, location.Length);
+                    fcoTableName += location[Convert.ToInt32(userInput) - 1];
+                    break;
+                case "test":
+                    Console.WriteLine("\nWhat is the name of the table you want to test?");
+                    userInput = Console.ReadLine();
+                    fcoTableName = fcoTableDir + userInput + ".json";
+                    return;
+                default:
+                    IndexCheck(userInput, location.Length);
+                    return;
+            }
+
+            /*if (userInput.ToLower() == "test") {
                 Console.WriteLine("\nWhat is the name of the table you want to test?");
                 userInput = Console.ReadLine();
                 fcoTableName = fcoTableDir + userInput + ".json";
@@ -113,7 +147,7 @@ namespace SonicUnleashedFCOConv {
             if (userInput == "2") {
                 IndexCheck(userInput, location.Length);
                 fcoTableName += location[Convert.ToInt32(userInput) - 1];
-            }
+            }*/
 
             Console.WriteLine("\nPlease Input the number corresponding to the language of your FCO file");
             Console.WriteLine("\n1: English\n2: French\n3: German\n4: Italian\n5: Japanese\n6: Spanish\n");
