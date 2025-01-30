@@ -93,6 +93,98 @@
             "HexString": "00 00 00 7A"
         },
 		{
+            "Letter": "{A}",
+            "HexString": "00 00 00 7B"
+        },
+        {
+            "Letter": "{B}",
+            "HexString": "00 00 00 7C"
+        },
+        {
+            "Letter": "{X}",
+            "HexString": "00 00 00 7D"
+        },
+        {
+            "Letter": "{Y}",
+            "HexString": "00 00 00 7E"
+        },
+        {
+            "Letter": "{LB}",
+            "HexString": "00 00 00 7F"
+        },
+        {
+            "Letter": "{RB}",
+            "HexString": "00 00 00 80"
+        },
+        {
+            "Letter": "{LT}",
+            "HexString": "00 00 00 81"
+        },
+        {
+            "Letter": "{RT}",
+            "HexString": "00 00 00 82"
+        },
+        {
+            "Letter": "{LSU}",
+            "HexString": "00 00 00 83"
+        },
+        {
+            "Letter": "{LSR}",
+            "HexString": "00 00 00 84"
+        },
+        {
+            "Letter": "{LSD}",
+            "HexString": "00 00 00 85"
+        },
+        {
+            "Letter": "{LSL}",
+            "HexString": "00 00 00 86"
+        },
+        {
+            "Letter": "{RSU}",
+            "HexString": "00 00 00 87"
+        },
+        {
+            "Letter": "{RSR}",
+            "HexString": "00 00 00 88"
+        },
+        {
+            "Letter": "{RSD}",
+            "HexString": "00 00 00 89"
+        },
+        {
+            "Letter": "{RSL}",
+            "HexString": "00 00 00 8A"
+        },
+        {
+            "Letter": "{UP}",
+            "HexString": "00 00 00 8B"
+        },
+        {
+            "Letter": "{RIGHT}",
+            "HexString": "00 00 00 8C"
+        },
+        {
+            "Letter": "{DOWN}",
+            "HexString": "00 00 00 8D"
+        },
+        {
+            "Letter": "{LEFT}",
+            "HexString": "00 00 00 8E"
+        },
+        {
+            "Letter": "{START}",
+            "HexString": "00 00 00 8F"
+        },
+        {
+            "Letter": "{SELECT}",
+            "HexString": "00 00 00 90"
+        },
+        {
+            "Letter": "{AUTOSAVE}",
+            "HexString": "00 00 00 91"
+        },
+		{
             "Letter": "{ValueP1}",
             "HexString": "00 00 00 01"
         },
