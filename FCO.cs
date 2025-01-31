@@ -130,7 +130,7 @@ namespace SonicUnleashedFCOConv {
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FCO");
-            writer.WriteAttributeString("Table", Common.fcoTableName);      // This is used later once the XML is used to convert the data back into an FCO format lol
+            writer.WriteAttributeString("Table", Common.fcoTableName);      // This is used later once the XML is used to convert the data back into an FCO format
             
             writer.WriteStartElement("Groups");
             foreach (Structs.Group group in groups) {
