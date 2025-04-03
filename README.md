@@ -11,7 +11,8 @@ There is also a new tool with a GUI called [Converse](https://github.com/NextinM
 You can also simply drag and drop supported file formats onto the executable.
 
 ## To Do
-- (Ongoing) Update Translation JSONs for new system
+- (Stopped) ~~Update Translation JSONs for new system~~
+- Update JSON Table System with new Converse IDs
 - (Try) Add DDS Support
 
 ## Thanks
