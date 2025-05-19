@@ -23,6 +23,7 @@ namespace SUFontTool {
                     Console.WriteLine("A new Args system will be implemented instead!");
                     Console.WriteLine("Press any key to exit...");
                     Console.ReadKey();
+                    
                     // This is the old FCO Conv Code
                     //FCO.ReadFCO(args[0]);
                     //FCO.WriteXML(args[0]);
@@ -64,7 +65,13 @@ namespace SUFontTool {
                             }
                         }
                         else {
-                            if (Common.ErrorCheck() == false) XML.WriteFTE(args[0]);
+                            if (Common.ErrorCheck() == false)
+                            {
+                                using BinaryObjectWriter writer = new BinaryObjectWriter(filePath + ".fte", Endianness.Big, Encoding.UTF8);
+                                writer.WriteObject(fcoFile);
+                                Console.WriteLine("FTE Written");
+                                //XML.WriteFTE(args[0]);
+                            }
                             Common.ExtractCheck();
                         }
                         
