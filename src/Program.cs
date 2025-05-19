@@ -78,13 +78,11 @@ namespace SUFontTool {
                         }
                         if (type == 2)
                         {
-                            FontTexture fteFile = null;
-                            
-                            fteFile = XML.ReadTextureXml(args[0]);
+                            FontTexture fteFile = XML.ReadTextureXml(args[0]);
                             writer.WriteObject(fteFile);
                             Console.WriteLine("FTE Written");
                                 
-                            //Common.ExtractCheck(fteFile);
+                            Common.ExtractCheck(fteFile);
                         }
                         else
                         {

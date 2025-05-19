@@ -70,13 +70,13 @@ namespace SUFontTool {
             }
         }
 
-        public static void ExtractCheck() {
+        public static void ExtractCheck(FontTexture fteFile) {
             Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
             string choice = Console.ReadLine();
             if (choice.ToLower() != "y") return;
 
-            DDS.Process();
-            Table.WriteJSON();
+            DDS.Process(fteFile);
+            Table.WriteJSON(fteFile);
             Console.WriteLine("\nPress Enter to Exit.");
             Console.Read();
         }

@@ -3,18 +3,17 @@ using libfco;
 
 namespace SUFontTool {
     public static class Table {
-        public static List<Character> characters = XML.characters;
         public class ConversionEntry {
             public string? letter { get; set; }
             public string? hexString { get; set; }
         }
-        public static void WriteJSON() {
+        public static void WriteJSON(FontTexture fteFile) {
 
             List<ConversionEntry> conversionTable = new List<ConversionEntry>();
 
             string? userInput;
 
-            foreach (Character character in characters) {
+            foreach (Character character in fteFile.Characters) {
                 Console.WriteLine(character.CharacterID + ": ");
                 userInput = Console.ReadLine();
                 if (userInput == null) {
