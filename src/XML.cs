@@ -101,17 +101,17 @@ namespace SUFontTool {
             }
             writer.WriteEndElement();
 
-            writer.WriteComment("ConverseID = Hex, Points = Px, Point1 = TopLeft, Point2 = BottomRight");
+            //writer.WriteComment("ConverseID = Hex, Points = Px, Point1 = TopLeft, Point2 = BottomRight");
 
             writer.WriteStartElement("Characters");
             foreach(Character character in fteFile.Characters) {
                 writer.WriteStartElement("Character");
                 writer.WriteAttributeString("TextureIndex", character.TextureIndex.ToString());
                 writer.WriteAttributeString("CharacterID", character.CharacterID.ToString());
-                writer.WriteAttributeString("TopLeft_X", character.TopLeft.X.ToString());
-                writer.WriteAttributeString("TopLeft_Y", character.TopLeft.Y.ToString());
-                writer.WriteAttributeString("BottomRight_X", character.BottomRight.X.ToString());
-                writer.WriteAttributeString("BottomRight_Y", character.BottomRight.Y.ToString());
+                writer.WriteAttributeString("TopLeft_X", (character.TopLeft.X * fteFile.Textures[character.TextureIndex].Size.X).ToString());
+                writer.WriteAttributeString("TopLeft_Y", (character.TopLeft.Y * fteFile.Textures[character.TextureIndex].Size.Y).ToString());
+                writer.WriteAttributeString("BottomRight_X", (character.BottomRight.X * fteFile.Textures[character.TextureIndex].Size.X).ToString());
+                writer.WriteAttributeString("BottomRight_Y", (character.BottomRight.Y * fteFile.Textures[character.TextureIndex].Size.Y).ToString());
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -258,7 +258,6 @@ namespace SUFontTool {
             FontTexture fte = new FontTexture();
             List<TextureEntry> textures = new List<TextureEntry>();
             List<Character> characters = new List<Character>();
-            int texCount = 0, charaCount = 0, spriteIndex = 0;
             
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             XmlDocument xDoc = new XmlDocument();
@@ -278,7 +277,6 @@ namespace SUFontTool {
                         };
 
                         textures.Add(texture);
-                        texCount++;
                     }
                 }
 
@@ -292,9 +290,11 @@ namespace SUFontTool {
                             BottomRight = new Vector2(float.Parse(charaNode.Attributes.GetNamedItem("BottomRight_X")!.Value!),
                                 float.Parse(charaNode.Attributes.GetNamedItem("BottomRight_Y")!.Value!))
                         };
+                        
+                        character.TopLeft = character.TopLeft / textures[character.TextureIndex].Size;
+                        character.BottomRight = character.BottomRight / textures[character.TextureIndex].Size;
 
                         characters.Add(character);
-                        charaCount++;
                     }
                 }
             }
