@@ -2,17 +2,11 @@
 A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files into XML files and vice versa.
 There is also a new tool with a GUI called [Converse](https://github.com/NextinMono/converse) which can also be used
 
-> [!WARNING]
-> - The current formatting and naming schemes are always subject to change.
-> - The new JSON files are yet to be tested properly, expect a small few to be incorrect.
-
 ## Usage
-`SonicUnleashedFCOConv <Path to .fte/.fco/.xml>`\
+`SU Font Tool vX.X\nUsage: SUFontTool <Path to .fte/.fco/.xml>`\
 You can also simply drag and drop supported file formats onto the executable.
 
 ## To Do
-- (Stopped) ~~Update Translation JSONs for new system~~
-- Update JSON Table System with new Converse IDs
 - (Try) Add DDS Support
 
 ## Thanks
@@ -35,12 +29,11 @@ When converted to an XML you can view and edit the different fields to your liki
     <Texture Name="mat_comon_x360_002" Size_X="512" Size_Y="512" />
     <Texture Name="fte_ConverseMain_000" Size_X="512" Size_Y="512" />
   </Textures>
-  <!--ConverseID = Hex, Points = Px, Point1 = TopLeft, Point2 = BottomRight-->
   <Characters>      - Mappings of each Character within their Texture file
-    <Character TextureIndex="0" ConverseID="00 00 00 64" Point1_X="0" Point1_Y="0" Point2_X="28" Point2_Y="28" />
-    <Character TextureIndex="0" ConverseID="00 00 00 65" Point1_X="30" Point1_Y="0" Point2_X="58" Point2_Y="28" />
-    <Character TextureIndex="0" ConverseID="00 00 00 66" Point1_X="60" Point1_Y="0" Point2_X="88" Point2_Y="28" />
-    <Character TextureIndex="0" ConverseID="00 00 00 67" Point1_X="90" Point1_Y="0" Point2_X="118" Point2_Y="28" />
+    <Character TextureIndex="0" CharacterID="100" TopLeft_X="0" TopLeft_Y="0" BottomRight_X="28" BottomRight_Y="28" />
+    <Character TextureIndex="0" CharacterID="101" TopLeft_X="30" TopLeft_Y="0" BottomRight_X="58" BottomRight_Y="28" />
+    <Character TextureIndex="0" CharacterID="102" TopLeft_X="60" TopLeft_Y="0" BottomRight_X="88" BottomRight_Y="28" />
+    <Character TextureIndex="0" CharacterID="103" TopLeft_X="90" TopLeft_Y="0" BottomRight_X="118" BottomRight_Y="28" />
     ...         - There are a lot more + You can assign your own too as long as it's
                                          outside the used characters and within the overall character limit
   </Characters>
@@ -55,14 +48,17 @@ When converted to an XML, you can view and edit the different fields such as:
   <Groups>
     <Group Name="wm_hint_start">                    - Groups which hold Cells
       <Cell Name="smile" Alignment="0">             - Cells that contain Text Message and Format data
-        <Message MessageData="I made you this World Map. I{NewLine}thought it might come in handy." />
-        <ColourMain Start="0" End="59" Marker="2" Alpha="255" Red="255" Green="255" Blue="255" />
-        <ColourSub1 Start="0" End="59" Marker="1" Alpha="0" Red="0" Green="0" Blue="28" />
-        <ColourSub2 Start="0" End="59" Marker="0" Alpha="0" Red="0" Green="0" Blue="1" />
-        <Highlight0 Start="0" End="14" Marker="2" Alpha="255" Red="255" Green="255" Blue="255" />
-        <Highlight1 Start="15" End="24" Marker="2" Alpha="255" Red="252" Green="243" Blue="5" />
-        <Highlight2 Start="25" End="25" Marker="2" Alpha="255" Red="204" Green="255" Blue="204" />
-        <Highlight3 Start="26" End="59" Marker="2" Alpha="255" Red="255" Green="255" Blue="255" />
+        <Message>I made you this World Map. I\nthought it might come in handy.</Message>
+        <ColourMain Start="0" End="59" Marker="2" Alpha="1" Red="1" Green="1" Blue="1" />
+        <ColourSub1 Start="0" End="59" Marker="1" Alpha="0" Red="0" Green="0" Blue="0.10980392" />
+        <ColourSub2 Start="0" End="59" Marker="0" Alpha="0" Red="0" Green="0" Blue="0.003921569" />
+        <Highlights>
+          <Highlight0 Start="0" End="14" Marker="2" Alpha="1" Red="1" Green="1" Blue="1" />
+          <Highlight1 Start="15" End="24" Marker="2" Alpha="1" Red="0.9882353" Green="0.9529412" Blue="0.019607844" />
+          <Highlight2 Start="25" End="25" Marker="2" Alpha="1" Red="0.8" Green="1" Blue="0.8" />
+          <Highlight3 Start="26" End="59" Marker="2" Alpha="1" Red="1" Green="1" Blue="1" />
+        </Highlights>
+        <SubCells />
       </Cell>
       ...       - You can have any amount of Cells within a Group
     </Group>
