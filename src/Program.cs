@@ -7,7 +7,7 @@ namespace SUFontTool {
         public static string? fileDir, fileName, currentDir, tableArg;
         static void Main(string[] args) {
             if (args.Length == 0) {
-                Console.WriteLine("SU Font Tool v1.0\nUsage: SUFontTool <Path to .fte/.fco/.xml>");
+                Console.WriteLine("SU Font Tool v3.0\nUsage: SUFontTool <Path to .fte/.fco/.xml>");
                 Console.ReadKey();
             }
 
@@ -39,9 +39,7 @@ namespace SUFontTool {
                     if (file.EndsWith(".fte")) {
                         BinaryObjectReader reader = new BinaryObjectReader(args[0], Endianness.Big, Encoding.UTF8);
                         FontTexture fteFile = reader.ReadObject<FontTexture>();
-                        
-                        //FTE.ReadFTE(args[0]);
-                        FTE.WriteXML(args[0], fteFile);
+                        XML.WriteTextureXml(args[0], fteFile);
                     }
                     if (file.EndsWith(".fco")) {
                         BinaryObjectReader reader = new BinaryObjectReader(args[0], Endianness.Big, Encoding.UTF8);
@@ -50,29 +48,47 @@ namespace SUFontTool {
                         Common.TableAssignment();
                         TranslationTable thing = TranslationTable.Read(Common.fcoTable);
                         
-                        FCO.WriteXML(args[0], fcoFile, thing);
+                        XML.WriteConverseXml(args[0], fcoFile, thing);
                     }
                     if (file.EndsWith(".xml")) {
-                        FontConverse fcoFile = XML.ReadXML(args[0]);
                         string filePath = Path.GetDirectoryName(args[0]) + "\\" + Path.GetFileNameWithoutExtension(args[0]);
-                        File.Delete(Path.Combine(filePath + ".fco"));
+                        string ext = null;
+                        int type = XML.ReadXmlHeader(args[0]);
                         
-                        if (XML.FCO) {
-                            if (Common.ErrorCheck() == false) {
-                                using BinaryObjectWriter writer = new BinaryObjectWriter(filePath + ".fco", Endianness.Big, Encoding.UTF8);
-                                writer.WriteObject(fcoFile);
-                                Console.WriteLine("FCO Written");
-                            }
+                        switch (type)
+                        {
+                            case 1:
+                                ext = ".fco";
+                                break;
+                            case 2:
+                                ext = ".fte";
+                                break;
+                            default:
+                                Console.WriteLine("Invalid XML format!");
+                                return;
                         }
-                        else {
-                            if (Common.ErrorCheck() == false)
-                            {
-                                using BinaryObjectWriter writer = new BinaryObjectWriter(filePath + ".fte", Endianness.Big, Encoding.UTF8);
-                                writer.WriteObject(fcoFile);
-                                Console.WriteLine("FTE Written");
-                                //XML.WriteFTE(args[0]);
-                            }
-                            Common.ExtractCheck();
+                        
+                        File.Delete(Path.Combine(filePath + ext));
+                        using BinaryObjectWriter writer = new BinaryObjectWriter(filePath + ext, Endianness.Big, Encoding.UTF8);
+                        
+                        if (type == 1) {
+                            FontConverse fcoFile = XML.ReadConverseXml(args[0]);
+                            writer.WriteObject(fcoFile);
+                            Console.WriteLine("FCO Written");
+                        }
+                        if (type == 2)
+                        {
+                            FontTexture fteFile = null;
+                            
+                            fteFile = XML.ReadTextureXml(args[0]);
+                            writer.WriteObject(fteFile);
+                            Console.WriteLine("FTE Written");
+                                
+                            //Common.ExtractCheck(fteFile);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid XML format!");
                         }
                         
                     }
