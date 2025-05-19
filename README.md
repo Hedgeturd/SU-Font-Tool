@@ -1,6 +1,6 @@
 # Sonic Unleashed Font Tool
-A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files into XML files and vice versa.
-There is also a new tool with a GUI called [Converse](https://github.com/NextinMono/converse) which can also be used
+A tool to convert Unleashed Font-Texture (FTE) and Font-Converse (FCO) files into XML files and vice versa.<br>
+There is a new tool with a GUI called [Converse](https://github.com/NextinMono/converse) which can also be used along side SU Font Tool.
 
 ## Usage
 `SU Font Tool vX.X\nUsage: SUFontTool <Path to .fte/.fco/.xml>`\
