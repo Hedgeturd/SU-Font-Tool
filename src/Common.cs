@@ -8,68 +8,6 @@ namespace SUFontTool {
         public static bool noLetter = false;
 
         // Common Functions
-        public static void TempCheck(int mode) {    // This is no longer needed but will be kept for future use            
-            if (mode == 1) {
-                FileStream fs;
-                
-                if (File.Exists("temp.txt")) {
-                    File.Delete("temp.txt");
-                    fs = File.Create("temp.txt");
-                    fs.Close();
-
-                    Console.WriteLine("Deleted and Restored Temp File.");
-                }
-                else {
-                    fs = File.Create("temp.txt");
-                    Console.WriteLine("Created Temp File.");
-                    fs.Close();
-                }
-            }
-            if (mode == 2) {
-                if (Common.noLetter) {
-                    return;
-                }
-                
-                File.Delete("temp.txt");
-            }
-        }
-
-        public static bool ErrorCheck() {
-            if (OLDTranslator.missinglist.Count > 0) {
-                TempCheck(1);
-            
-                StreamWriter sw = new StreamWriter("temp.txt", append: true);
-                for (int i = 0; i < OLDTranslator.missinglist.Count; i++) {
-                    sw.WriteLine(OLDTranslator.missinglist[i]);
-                }                
-                sw.Close();
-
-                switch (Path.GetExtension(Program.fileName)) {
-                    case ".fco":
-                        Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTableName + " Table");
-                        Console.WriteLine("XML writing aborted!");
-                        break;
-                    case ".xml":
-                        Console.WriteLine("\nMissing Characters between " + Program.fileName + " and " + Common.fcoTable);
-                        Console.WriteLine("FCO writing aborted!");
-                        break;
-                    default:
-                        Console.WriteLine("What did you do to me..");
-                        break;
-                }
-
-                Console.WriteLine("ERROR: Please check your temp file!");
-                Console.WriteLine("\nPress Enter to Exit.");
-                Console.Read();
-                
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public static void ExtractCheck(FontTexture fteFile) {
             Console.WriteLine("Do you want to extract sprites using " + Program.fileName + "? [Y/N]");
             string choice = Console.ReadLine();
@@ -91,7 +29,6 @@ namespace SUFontTool {
             }
         }
         
-        
         // FCO and FTE Functions
         public static void TableAssignment() {      // This block of code is probably the worst thing I have ever made :)
             fcoTableDir = Program.currentDir + "/tables/";
@@ -108,7 +45,7 @@ namespace SUFontTool {
                 case "1":
                     IndexCheck(userInput, location.Length);
                     fcoTableName += location[Convert.ToInt32(userInput) - 1];
-                    OLDTranslator.iconsTablePath = fcoTableDir + "Icons.json";
+                    //OLDTranslator.iconsTablePath = fcoTableDir + "Icons.json";
                     break;
                 case "2":
                     IndexCheck(userInput, location.Length);
@@ -140,37 +77,9 @@ namespace SUFontTool {
             fcoTableName += userInput = Console.ReadLine();
 
             fcoTable = fcoTableDir + fcoTableName + ".json";
-            Console.WriteLine(fcoTable + "\n" + OLDTranslator.iconsTablePath);
+            //Console.WriteLine(fcoTable + "\n" + OLDTranslator.iconsTablePath);
         }
-
-        public static int EndianSwap(int a) {
-            byte[] x = BitConverter.GetBytes(a);
-            Array.Reverse(x);
-            int b = BitConverter.ToInt32(x, 0);
-            return b;
-        }
-
-        public static float EndianSwapFloat(float a) {
-            byte[] x = BitConverter.GetBytes(a);
-            Array.Reverse(x);
-            float b = BitConverter.ToSingle(x, 0);
-            return b;
-        }
-
-        public static void SkipPadding(BinaryReader binaryReader) {
-            while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
-                int padding = Common.EndianSwap(binaryReader.ReadByte());
-
-                if (padding == 64) {
-                    binaryReader.BaseStream.Seek(1, SeekOrigin.Current);
-                }
-                else if (padding < 64) {
-                    binaryReader.BaseStream.Seek(-1, SeekOrigin.Current);
-                    break;
-                }
-            }
-        }
-
+        
         public static void WriteFCOColour(XmlWriter writer, CellColor colourType) {
             writer.WriteAttributeString("Start", colourType.Start.ToString());
             writer.WriteAttributeString("End", colourType.End.ToString());
@@ -183,16 +92,6 @@ namespace SUFontTool {
         }
 
         // XML Functions
-        public static byte[] StringToByteArray(string hex) {
-            int numberChars = hex.Length;
-            byte[] bytes = new byte[numberChars / 2];
-            for (int i = 0; i < numberChars; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            }
-            return bytes;
-        }
-
         public static CellColor ReadXMLColour(XmlElement? colourNode)  {
             try
             {
@@ -217,18 +116,6 @@ namespace SUFontTool {
                 Console.ReadKey();
                 throw;
             }
-        }
-
-        public static string PadString(string input, char fillerChar)
-        {
-            int padding = (4 - input.Length % 4) % 4;
-            return input.PadRight(input.Length + padding, fillerChar);
-        }
-
-        public static void ConvString(BinaryWriter writer, string value)  {
-            // Turning string into Byte Array so the data can be written properly
-            byte[] utf8Bytes = Encoding.UTF8.GetBytes(value);
-            writer.Write(utf8Bytes);
         }
 
         public static void RemoveComments(XmlNode node)
