@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Xml;
 using libfco;
 
@@ -6,9 +7,9 @@ namespace SUFontTool {
         public static string tableNoName;
         public static int texCount = 0, charaCount = 0, spriteIndex = 0;
         public static bool FCO = false;
-        public static List<Structs.Group> groups = new List<Structs.Group>();
-        public static List<Structs.Texture> textures = new List<Structs.Texture>();
-        public static List<Structs.Character> characters = new List<Structs.Character>();
+        public static List<Group> groups = new List<Group>();
+        public static List<TextureEntry> textures = new List<TextureEntry>();
+        public static List<Character> characters = new List<Character>();
         public static FontConverse ReadXML(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
 
@@ -122,11 +123,13 @@ namespace SUFontTool {
             if (xRoot is { Name: "FTE" }) {
                 foreach (XmlElement node in xRoot) {
                     if (node.Name == "Textures") { 
-                        foreach (XmlElement textureNode in node.ChildNodes) {
-                            Structs.Texture texture = new Structs.Texture() {
-                                textureName = textureNode.Attributes.GetNamedItem("Name")!.Value!,
-                                textureSizeX = int.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
-                                textureSizeY = int.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!),
+                        foreach (XmlElement textureNode in node.ChildNodes)
+                        {
+                            TextureEntry texture = new TextureEntry()
+                            {
+                                Name = textureNode.Attributes.GetNamedItem("Name")!.Value!,
+                                Size = new Vector2(float.Parse(textureNode.Attributes.GetNamedItem("Size_X")!.Value!),
+                                    float.Parse(textureNode.Attributes.GetNamedItem("Size_Y")!.Value!))
                             };
 
                             textures.Add(texture);
@@ -136,13 +139,13 @@ namespace SUFontTool {
 
                     if (node.Name == "Characters") {
                         foreach (XmlElement charaNode in node.ChildNodes) {
-                            Structs.Character character = new Structs.Character() {
-                                textureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
-                                convID = charaNode.Attributes.GetNamedItem("ConverseID")!.Value!,
-                                charPoint1X = int.Parse(charaNode.Attributes.GetNamedItem("Point1_X")!.Value!),
-                                charPoint1Y = int.Parse(charaNode.Attributes.GetNamedItem("Point1_Y")!.Value!),
-                                charPoint2X = int.Parse(charaNode.Attributes.GetNamedItem("Point2_X")!.Value!),
-                                charPoint2Y = int.Parse(charaNode.Attributes.GetNamedItem("Point2_Y")!.Value!),
+                            Character character = new Character() {
+                                TextureIndex = int.Parse(charaNode.Attributes.GetNamedItem("TextureIndex")!.Value!),
+                                CharacterID = int.Parse(charaNode.Attributes.GetNamedItem("TopLeft_Y")!.Value!),    
+                                TopLeft = new Vector2(float.Parse(charaNode.Attributes.GetNamedItem("TopLeft_X")!.Value!),
+                                    float.Parse(charaNode.Attributes.GetNamedItem("TopLeft_Y")!.Value!)),
+                                BottomRight = new Vector2(float.Parse(charaNode.Attributes.GetNamedItem("BottomRight_X")!.Value!),
+                                    float.Parse(charaNode.Attributes.GetNamedItem("BottomRight_Y")!.Value!))
                             };
 
                             characters.Add(character);
@@ -158,7 +161,7 @@ namespace SUFontTool {
             return null;
         }
 
-        public static void WriteFCO(string path) {
+        /*public static void WriteFCO(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             File.Delete(Path.Combine(filePath + ".fco"));
             BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fco", FileMode.OpenOrCreate));
@@ -171,27 +174,27 @@ namespace SUFontTool {
             binaryWriter.Write(Common.EndianSwap(groups.Count));
             for (int g = 0; g < groups.Count; g++) {
                 // Group Name
-                binaryWriter.Write(Common.EndianSwap(groups[g].groupName.Length));
-                Common.ConvString(binaryWriter, Common.PadString(groups[g].groupName, '@'));
+                binaryWriter.Write(Common.EndianSwap(groups[g].Name.Length));
+                Common.ConvString(binaryWriter, Common.PadString(groups[g].Name, '@'));
 
                 // Cell Count
-                binaryWriter.Write(Common.EndianSwap(groups[g].cellList.Count));
-                for (int c = 0; c < groups[g].cellList.Count; c++) {
-                    var standardArea = groups[g].cellList[c];
+                binaryWriter.Write(Common.EndianSwap(groups[g].Cells.Count));
+                for (int c = 0; c < groups[g].Cells.Count; c++) {
+                    var standardArea = groups[g].Cells[c];
                     // Cell Name
-                    binaryWriter.Write(Common.EndianSwap(standardArea.cellName.Length));
-                    Common.ConvString(binaryWriter, Common.PadString(standardArea.cellName, '@'));
+                    binaryWriter.Write(Common.EndianSwap(standardArea.Name.Length));
+                    Common.ConvString(binaryWriter, Common.PadString(standardArea.Name, '@'));
 
                     //Message Data
-                    binaryWriter.Write(Common.EndianSwap(standardArea.messageCharAmount));
-                    binaryWriter.Write(standardArea.cellMessageWrite);
+                    binaryWriter.Write(Common.EndianSwap(standardArea.Message.Length));
+                    binaryWriter.Write(standardArea.Message);
 
                     // Colour Start
                     binaryWriter.Write(Common.EndianSwap(0x00000004));
                     
                     /*Common.WriteXMLColour(binaryWriter, standardArea.colourMain);  // Text Colours
                     Common.WriteXMLColour(binaryWriter, standardArea.colourSub1);  // Check
-                    Common.WriteXMLColour(binaryWriter, standardArea.colourSub2);  // Check*/
+                    Common.WriteXMLColour(binaryWriter, standardArea.colourSub2);  // Check#1#
 
                     //End Colours
                     binaryWriter.Write(Common.EndianSwap(standardArea.colourMain.colourStart));
@@ -221,9 +224,9 @@ namespace SUFontTool {
 
             binaryWriter.Close();
             Console.WriteLine("FCO written!");
-        }
+        }*/
 
-        public static void WriteFTE(string path) {
+        /*public static void WriteFTE(string path) {
             string filePath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path);
             File.Delete(Path.Combine(filePath + ".fte"));
             BinaryWriter binaryWriter = new BinaryWriter(File.Open(filePath + ".fte", FileMode.OpenOrCreate));
@@ -254,6 +257,6 @@ namespace SUFontTool {
 
             binaryWriter.Close();
             Console.WriteLine("FTE written!");
-        }
+        }*/
     }
 }
